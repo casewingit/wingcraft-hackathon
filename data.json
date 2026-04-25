@@ -6,29 +6,29 @@
     "description": "2인의 엔지니어가 모여 아이디어를 검증하고 프로토타입을 제작하는 고집적 해커톤 세션입니다."
   },
   "members": [
-    { "name": "Member A", "role": "Engineer" },
-    { "name": "Member B", "role": "Engineer" }
+    { "name": "다훈", "role": "Engineer" },
+    { "name": "효진", "role": "Engineer" }
   ],
   "events": [
     {
       "id": 1,
       "round": "RD.01: GENESIS",
-      "date": "2026.03.14 (토)",
+      "date": "2026.04.12 (일)",
       "status": "COMPLETED",
       "statusBadge": "ARCHIVED",
       "badgeClass": "completed",
       "link": "history/round1.html",
-      "details": "STATUS: COMPLETED\nDATE: 2026.03.14 (토)\nTIME: 11:30 START\nLOCATION: 망포역 김성민커피\nPARTICIPANTS: 다훈, 효진\nNOTES: 첫 번째 해커톤 세션."
+      "details": "STATUS: COMPLETED\nDATE: 2026.04.12 (일)\nTIME: 11:30 START\nLOCATION: 망포역 김성민커피\nPARTICIPANTS: 다훈, 효진\nNOTES: 첫 번째 해커톤 세션. 프로토타입 v0.1 빌드 완료."
     },
     {
       "id": 2,
       "round": "RD.02: MAIN BUILD",
-      "date": "2026.05.16 (토)",
+      "date": "2026.04.26 (일)",
       "status": "LIVE",
       "statusBadge": "LIVE",
       "badgeClass": "live",
       "link": null,
-      "details": "STATUS: LIVE\nDATE: 2026.05.16 (토)\nLOCATION: 망포역 김성민커피\nPARTICIPANTS: 다훈, 효진\nORGANIZER: wingcraft\nTOPIC: 공모전 뽀개기"
+      "details": "STATUS: ACTIVE / LIVE\nDATE: 2026.04.26 (일)\nLOCATION: 수원 망포역\nPARTICIPANTS: 다훈, 효진\nTOPIC: VoltAgent 기반 해커톤 허브 구축\nNOTES: 실시간 터미널 인터페이스 및 자동화 로직 구현 중."
     },
     {
       "id": 3,

@@ -245,30 +245,31 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.85);
+      background: var(--abyss-black);
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 1000;
-      backdrop-filter: blur(10px);
     }
 
     .terminal-window {
-      width: 90%;
-      max-width: 700px;
-      background: #1e1e1e;
-      border-radius: 12px;
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      background: #000;
       overflow: hidden;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-      border: 1px solid var(--warm-charcoal);
+      display: flex;
+      flex-direction: column;
     }
 
     .terminal-header {
-      background: #333;
-      padding: 10px 15px;
+      background: #1a1a1a;
+      padding: 12px 20px;
       display: flex;
       align-items: center;
       position: relative;
+      border-bottom: 1px solid var(--warm-charcoal);
     }
 
     .terminal-buttons {
@@ -280,6 +281,7 @@
       width: 12px;
       height: 12px;
       border-radius: 50%;
+      cursor: pointer;
     }
 
     .btn-close { background: #ff5f56; }
@@ -290,26 +292,26 @@
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 12px;
+      font-size: 13px;
       color: var(--steel-slate);
-      font-family: monospace;
+      font-family: 'SFMono-Regular', monospace;
     }
 
     .terminal-body {
-      padding: 20px;
+      flex: 1;
+      padding: 40px;
       font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-      font-size: 14px;
+      font-size: 16px;
       line-height: 1.6;
       color: var(--snow-white);
-      min-height: 300px;
-      max-height: 500px;
       overflow-y: auto;
+      background: #000;
     }
 
     .terminal-cursor {
       display: inline-block;
-      width: 8px;
-      height: 15px;
+      width: 10px;
+      height: 20px;
       background: var(--emerald-signal);
       margin-left: 5px;
       animation: blink 1s step-end infinite;
@@ -321,7 +323,9 @@
       50% { opacity: 0; }
     }
 
-    .terminal-prompt { color: var(--emerald-signal); margin-right: 10px; }
+    .terminal-prompt { color: var(--emerald-signal); margin-right: 12px; }
+    .command-text { color: var(--snow-white); }
+    .output-line { color: var(--warm-parchment); margin-left: 24px; margin-bottom: 4px; }
   </style>
 </head>
 <body>
@@ -343,12 +347,6 @@
       </div>
     </section>
 
-    <div class="widgets-grid">
-      <div class="widget" id="statusWidget">
-        <!-- Status Widget content injected here -->
-      </div>
-    </div>
-
     <footer>
       &copy; 2026 WINGCRAFT. EXECUTED BY 2-MAN SQUAD.
     </footer>
@@ -360,10 +358,10 @@
       <div class="terminal-header">
         <div class="terminal-buttons">
           <div class="terminal-button btn-close" onclick="closeTerminal()"></div>
-          <div class="terminal-button btn-minimize"></div>
+          <div class="terminal-button btn-minimize" onclick="closeTerminal()"></div>
           <div class="terminal-button btn-maximize"></div>
         </div>
-        <div class="terminal-title">wingcraft — bash — 80x24</div>
+        <div class="terminal-title">wingcraft — bash — 120x40</div>
       </div>
       <div class="terminal-body" id="terminalContent">
         <!-- Typed content will be injected here -->
@@ -401,7 +399,7 @@
         item.setAttribute('data-id', event.id);
         
         const content = `
-          <div class="event-card" onclick="openTerminal(${event.id}, event)">
+          <div class="event-card" onclick="handleCardClick(${event.id}, event)">
             <div class="event-info">
               <h2>${event.round}</h2>
               <p>${event.date} / ${event.status}</p>
@@ -413,28 +411,31 @@
         eventList.appendChild(item);
       });
 
-      // 3. Status Widget
-      const statusWidget = document.getElementById('statusWidget');
-      statusWidget.innerHTML = `
-        <div class="widget-header">
-          <span class="widget-label">PROJECT STATUS</span>
-          <span style="color: var(--volt-mint);">● LIVE</span>
-        </div>
-        <h3 style="margin-bottom: 1rem;">${data.projectInfo.phase}</h3>
-        <p style="color: var(--warm-parchment); font-size: 0.9375rem; margin-bottom: 2rem;">
-          ${data.projectInfo.description}
-        </p>
-        <div style="display: flex; gap: 0.5rem;">
-          ${data.members.map(m => `<span class="member-badge">${m.name.toUpperCase()}</span>`).join('')}
-        </div>
-      `;
-
       // Initialize Picker Logic
       initPicker();
     }
 
-    function openTerminal(eventId, event) {
-      if (event) event.preventDefault();
+    function handleCardClick(eventId, event) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      const picker = document.getElementById('eventPicker');
+      const items = document.querySelectorAll('.picker-item');
+      const targetIndex = projectData.events.findIndex(e => e.id === eventId);
+      
+      const center = picker.scrollTop + picker.offsetHeight / 2;
+      const targetItem = items[targetIndex];
+      const itemCenter = targetItem.offsetTop + targetItem.offsetHeight / 2;
+      
+      // 이미 활성화된 상태라면 터미널 오픈, 아니면 스크롤만
+      if (Math.abs(center - itemCenter) < 60) {
+        openTerminal(eventId);
+      } else {
+        picker.scrollTo({ top: targetIndex * 120, behavior: 'smooth' });
+      }
+    }
+
+    function openTerminal(eventId) {
       const eventData = projectData.events.find(e => e.id === eventId);
       if (!eventData) return;
 
@@ -442,25 +443,36 @@
       const content = document.getElementById('terminalContent');
       content.innerHTML = '';
       modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
 
       const lines = [
-        { text: `user@wingcraft:~/hackathon$ cat ${eventData.round.replace(/:/g, '').replace(/ /g, '_')}_LOG.md`, delay: 50 },
+        { text: `user@wingcraft:~/hackathon$ cat ${eventData.round.replace(/:/g, '').replace(/ /g, '_')}_LOG.md`, delay: 40 },
         { text: eventData.details, delay: 0 }
       ];
+
+      if (eventData.link) {
+        lines.push({ text: `\n[SYSTEM] External Archive detected.`, delay: 0 });
+        lines.push({ text: `[SYSTEM] Opening ${eventData.link}...`, delay: 50 });
+        setTimeout(() => {
+          window.location.href = eventData.link;
+        }, 2500);
+      }
 
       typeTerminal(content, lines);
     }
 
     function closeTerminal() {
       document.getElementById('terminalModal').style.display = 'none';
+      document.body.style.overflow = 'auto';
     }
 
     async function typeTerminal(container, lines) {
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         const lineElement = document.createElement('div');
+        lineElement.style.marginBottom = '10px';
         
-        if (i === 0) {
+        if (line.text.startsWith('user@wingcraft')) {
           // Command line
           lineElement.innerHTML = '<span class="terminal-prompt">user@wingcraft:~/hackathon$</span><span class="command-text"></span><span class="terminal-cursor"></span>';
           container.appendChild(lineElement);
@@ -475,20 +487,24 @@
           cursor.remove();
         } else {
           // Output lines
-          await new Promise(r => setTimeout(r, 200));
+          await new Promise(r => setTimeout(r, 300));
           const outputLines = line.text.split('\n');
           for (let oLine of outputLines) {
             const oDiv = document.createElement('div');
-            oDiv.style.color = 'var(--warm-parchment)';
-            oDiv.textContent = `> ${oLine}`;
+            oDiv.className = 'output-line';
+            oDiv.textContent = oLine.startsWith('>') ? oLine : `> ${oLine}`;
             container.appendChild(oDiv);
-            await new Promise(r => setTimeout(r, 50));
+            await new Promise(r => setTimeout(r, 30));
           }
-          // Final prompt
-          const finalPrompt = document.createElement('div');
-          finalPrompt.innerHTML = '<span class="terminal-prompt">user@wingcraft:~/hackathon$</span><span class="terminal-cursor"></span>';
-          container.appendChild(finalPrompt);
+          
+          // If it's the last line and not a redirect, show final prompt
+          if (i === lines.length - 1 && !line.text.includes('Opening')) {
+            const finalPrompt = document.createElement('div');
+            finalPrompt.innerHTML = '<span class="terminal-prompt">user@wingcraft:~/hackathon$</span><span class="terminal-cursor"></span>';
+            container.appendChild(finalPrompt);
+          }
         }
+        container.scrollTop = container.scrollHeight;
       }
     }
 
