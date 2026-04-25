@@ -3,7 +3,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>WINGCRAFT HACK-HUB 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -427,8 +427,8 @@
       const targetItem = items[targetIndex];
       const itemCenter = targetItem.offsetTop + targetItem.offsetHeight / 2;
       
-      // 이미 활성화된 상태라면 터미널 오픈, 아니면 스크롤만
-      if (Math.abs(center - itemCenter) < 60) {
+      // 모바일 편의를 위해 판정 범위를 100px로 넓힘 (기존 60px)
+      if (Math.abs(center - itemCenter) < 100) {
         openTerminal(eventId);
       } else {
         picker.scrollTo({ top: targetIndex * 120, behavior: 'smooth' });
