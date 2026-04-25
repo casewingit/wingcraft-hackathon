@@ -3,285 +3,283 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WINGCRAFT HACKATHON 2026</title>
+  <title>WINGCRAFT HACK-HUB 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;500&family=Syncopate:wght@400;700&family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --abyss-black: #050507;
-      --carbon-surface: #101010;
-      --emerald-signal: #00d992;
-      --voltagent-mint: #2fd6a1;
-      --warm-charcoal: #3d3a39;
-      --snow-white: #f2f2f2;
-      --warm-parchment: #b8b3b0;
-      --steel-slate: #8b949e;
-      --glow: drop-shadow(0 0 4px var(--emerald-signal));
+      --bg: #030303;
+      --accent: #ff3e00; /* 강렬한 오렌지-레드 포인트 */
+      --sub-accent: #00f0ff; /* 사이버틱한 시안 */
+      --text: #e0e0e0;
+      --glass: rgba(255, 255, 255, 0.03);
+      --border: rgba(255, 255, 255, 0.1);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     body {
-      background-color: var(--abyss-black);
-      color: var(--snow-white);
-      font-family: 'Inter', system-ui, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      padding: 2rem;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
       overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
+      background-size: 40px 40px;
     }
 
-    /* Poster Container */
-    .poster {
-      width: 100%;
-      max-width: 800px;
-      background-color: var(--carbon-surface);
-      border: 2px solid var(--warm-charcoal);
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      padding: 4rem 3rem;
-      box-shadow: rgba(0, 0, 0, 0.8) 0px 40px 100px;
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 1.5rem;
     }
 
-    /* Background Large Text */
-    .bg-text {
-      position: absolute;
-      font-size: 25vw;
-      font-weight: 900;
-      color: rgba(61, 58, 57, 0.1);
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) rotate(-90deg);
-      pointer-events: none;
-      white-space: nowrap;
-      z-index: 0;
-    }
-
-    /* Decorative Lines & Metadata */
-    .metadata {
-      position: absolute;
-      top: 1rem;
-      left: 1rem;
-      font-family: monospace;
-      font-size: 10px;
-      color: var(--steel-slate);
-      letter-spacing: 1px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .barcode {
-      position: absolute;
-      bottom: 1rem;
-      right: 1rem;
-      width: 100px;
-      height: 30px;
-      background: repeating-linear-gradient(90deg, var(--warm-charcoal), var(--warm-charcoal) 1px, transparent 1px, transparent 4px);
-      opacity: 0.5;
-    }
-
-    /* Header Section */
+    /* Header: Neo-Brutalism Style */
     header {
+      grid-column: span 12;
+      padding: 4rem 0;
       position: relative;
-      z-index: 1;
-      border-bottom: 4px solid var(--emerald-signal);
-      padding-bottom: 2rem;
-      margin-bottom: 3rem;
     }
 
-    .festival-tag {
-      font-weight: 700;
-      letter-spacing: 5px;
-      text-transform: uppercase;
-      color: var(--emerald-signal);
+    .brand {
+      font-family: 'Syncopate', sans-serif;
       font-size: 14px;
-      margin-bottom: 0.5rem;
+      letter-spacing: 10px;
+      color: var(--accent);
+      margin-bottom: 1rem;
       display: block;
     }
 
     h1 {
-      font-family: system-ui;
-      font-size: 80px;
+      font-size: clamp(40px, 8vw, 120px);
       font-weight: 900;
-      line-height: 0.9;
-      letter-spacing: -3px;
+      line-height: 0.8;
       text-transform: uppercase;
+      letter-spacing: -5px;
+      mix-blend-mode: difference;
     }
 
-    h1 span {
-      display: block;
-      color: var(--abyss-black);
-      -webkit-text-stroke: 1px var(--emerald-signal);
-      filter: var(--glow);
-    }
-
-    /* Lineup Style Schedule */
-    .lineup {
+    .glitch-text {
       position: relative;
-      z-index: 1;
-      margin-bottom: 4rem;
+      display: inline-block;
     }
 
-    .lineup-item {
+    .glitch-text::after {
+      content: 'HACK-HUB';
+      position: absolute;
+      left: 2px;
+      text-shadow: -2px 0 var(--sub-accent);
+      top: 0;
+      overflow: hidden;
+      clip: rect(0, 900px, 0, 0);
+      animation: noise 2s infinite linear alternate-reverse;
+    }
+
+    @keyframes noise {
+      0% { clip: rect(10px, 999px, 40px, 0); }
+      20% { clip: rect(30px, 999px, 80px, 0); }
+      100% { clip: rect(70px, 999px, 20px, 0); }
+    }
+
+    /* Main Dashboard Layout */
+    .widget {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .widget::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .label {
+      font-family: 'Fira Code', monospace;
+      font-size: 12px;
+      color: var(--sub-accent);
+      margin-bottom: 1.5rem;
       display: flex;
-      align-items: baseline;
-      border-bottom: 1px dashed var(--warm-charcoal);
-      padding: 1.5rem 0;
-      transition: all 0.3s ease;
+      justify-content: space-between;
+    }
+
+    /* Hackathon Status Widget */
+    .status-widget {
+      grid-column: span 4;
+    }
+
+    .session-info {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .members {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .member-tag {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--accent);
+      font-size: 14px;
+      color: var(--accent);
+    }
+
+    /* AI Opportunity Explorer */
+    .opp-widget {
+      grid-column: span 8;
+    }
+
+    .opp-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .opp-card {
+      background: rgba(255,255,255,0.02);
+      padding: 1.5rem;
+      border-left: 2px solid var(--sub-accent);
+      transition: 0.3s;
       text-decoration: none;
       color: inherit;
     }
 
-    .lineup-item:hover {
-      background-color: rgba(0, 217, 146, 0.05);
-      padding-left: 1rem;
-      border-bottom-color: var(--emerald-signal);
+    .opp-card:hover {
+      background: rgba(255,255,255,0.05);
+      transform: translateX(5px);
     }
 
-    .lineup-item.active {
-      color: var(--emerald-signal);
-    }
-
-    .round {
-      font-size: 18px;
-      font-weight: 700;
-      width: 80px;
-      font-family: monospace;
-    }
-
-    .title {
-      font-size: 32px;
-      font-weight: 800;
-      flex: 1;
-      text-transform: uppercase;
-    }
-
-    .date-info {
-      font-size: 18px;
-      font-weight: 400;
-      color: var(--warm-parchment);
-    }
-
-    /* Info Grid */
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 2rem;
-      border-top: 1px solid var(--warm-charcoal);
-      padding-top: 2rem;
-      position: relative;
-      z-index: 1;
-    }
-
-    .info-box h3 {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--steel-slate);
+    .opp-card h4 {
+      font-size: 16px;
       margin-bottom: 0.5rem;
+      color: var(--text);
     }
 
-    .info-box p {
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--snow-white);
+    .opp-card p {
+      font-size: 13px;
+      color: #888;
     }
 
-    /* Footer Pulse */
-    .pulse-container {
-      margin-top: auto;
+    /* History Timeline */
+    .history-widget {
+      grid-column: span 12;
       display: flex;
-      align-items: center;
       gap: 1rem;
-      padding-top: 3rem;
+      overflow-x: auto;
+      padding: 2rem 0;
     }
 
-    .pulse {
-      width: 12px;
-      height: 12px;
-      background-color: var(--emerald-signal);
-      border-radius: 50%;
-      box-shadow: 0 0 10px var(--emerald-signal);
-      animation: heartbeat 1.5s infinite;
+    .history-item {
+      min-width: 300px;
+      background: var(--glass);
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      color: inherit;
     }
 
-    @keyframes heartbeat {
-      0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.5); opacity: 0.5; }
-      100% { transform: scale(1); opacity: 1; }
+    .history-item:hover { border-color: var(--accent); }
+
+    /* Floating Decor */
+    .deco-box {
+      position: absolute;
+      right: 2rem;
+      top: 4rem;
+      text-align: right;
+      font-family: 'Fira Code', monospace;
+      font-size: 12px;
+      opacity: 0.5;
     }
 
-    @media (max-width: 600px) {
-      h1 { font-size: 50px; }
-      .title { font-size: 24px; }
-      .poster { padding: 2rem 1.5rem; }
-      .info-grid { grid-template-columns: 1fr; }
+    @media (max-width: 900px) {
+      .status-widget, .opp-widget { grid-column: span 12; }
+      .opp-list { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <div class="bg-text">2026</div>
-
-  <div class="poster">
-    <div class="metadata">
-      <span>REF: WINGCRAFT-HACK-02</span>
-      <span>LOC: 37.2396° N, 127.0617° E</span>
-      <span>VER: 1.0.4</span>
-    </div>
-
+  <div class="container">
     <header>
-      <span class="festival-tag">Engineering Festival</span>
-      <h1>Wingcraft<span>Hackathon</span></h1>
+      <span class="brand">WINGCRAFT PRIVATE UNIT</span>
+      <h1><span class="glitch-text">HACK-HUB</span><br><span>2026</span></h1>
+      <div class="deco-box">
+        [ NODE: 02 ]<br>
+        [ SCALE: MICRO ]<br>
+        [ STATUS: BUILDING ]
+      </div>
     </header>
 
-    <div class="lineup">
-      <div class="lineup-item active">
-        <span class="round">RD.02</span>
-        <span class="title">Main Stage Build</span>
-        <span class="date-info">MAY 15 / 2026</span>
+    <div class="widget status-widget">
+      <div class="label">
+        <span>PROJECT STATUS</span>
+        <span>● LIVE</span>
       </div>
-
-      <a href="history/round1.html" class="lineup-item">
-        <span class="round">RD.01</span>
-        <span class="title">The Genesis</span>
-        <span class="date-info">APR 12 / 2026</span>
-      </a>
-
-      <div class="lineup-item" style="opacity: 0.3;">
-        <span class="round">RD.03</span>
-        <span class="title">Coming Soon</span>
-        <span class="date-info">TBA</span>
+      <div class="session-info">RD.02: MAIN BUILD</div>
+      <p style="color: #888; font-size: 14px; line-height: 1.6;">
+        2인의 엔지니어가 모여 아이디어를 검증하고 프로토타입을 제작하는 소규모 고집적 해커톤 세션입니다.
+      </p>
+      <div class="members">
+        <span class="member-tag">Member A</span>
+        <span class="member-tag">Member B</span>
       </div>
     </div>
 
-    <div class="info-grid">
-      <div class="info-box">
-        <h3>Location</h3>
-        <p>망포역 김성민커피</p>
+    <div class="widget opp-widget">
+      <div class="label">
+        <span>AI OPPORTUNITY RADAR</span>
+        <span>KR GOVERNMENT & VC</span>
       </div>
-      <div class="info-box">
-        <h3>Theme</h3>
-        <p>Agnostic Build</p>
-      </div>
-      <div class="info-box">
-        <h3>Entry</h3>
-        <p>Engineers Only</p>
-      </div>
-      <div class="info-box">
-        <h3>Hardware</h3>
-        <p>Bring Your Own</p>
+      <div class="opp-list">
+        <a href="https://www.k-startup.go.kr" target="_blank" class="opp-card">
+          <h4>K-Startup</h4>
+          <p>중기부 주관 창업 지원 및 인공지능 분야 공모전 총괄</p>
+        </a>
+        <a href="https://www.nipa.kr" target="_blank" class="opp-card">
+          <h4>NIPA</h4>
+          <p>정보통신산업진흥원 AI 바우처 및 전략사업 공고</p>
+        </a>
+        <a href="https://www.iitp.kr" target="_blank" class="opp-card">
+          <h4>IITP</h4>
+          <p>정보통신기획평가원 R&D 기술개발 지원사업</p>
+        </a>
+        <a href="https://www.data.go.kr" target="_blank" class="opp-card">
+          <h4>공공데이터포털</h4>
+          <p>AI 모델 학습에 필요한 공공 데이터셋 통합 조회</p>
+        </a>
       </div>
     </div>
 
-    <div class="pulse-container">
-      <div class="pulse"></div>
-      <span style="font-size: 14px; font-weight: 700; letter-spacing: 1px;">SYSTEM ACTIVE / SIGNAL DETECTED</span>
+    <div class="widget" style="grid-column: span 12;">
+      <div class="label">LOGS / ARCHIVE</div>
+      <div style="display: flex; gap: 1rem;">
+        <a href="history/round1.html" class="history-item">
+          <div style="font-family: 'Fira Code'; font-size: 12px; color: var(--accent); margin-bottom: 0.5rem;">2026.04.12</div>
+          <div style="font-weight: 700;">RD.01: THE GENESIS</div>
+          <p style="font-size: 13px; color: #888; margin-top: 0.5rem;">첫 번째 빌드. 환경 셋업 및 아이디어 구체화 세션.</p>
+        </a>
+        <div class="history-item" style="opacity: 0.3;">
+          <div style="font-family: 'Fira Code'; font-size: 12px; margin-bottom: 0.5rem;">UPCOMING</div>
+          <div style="font-weight: 700;">RD.03: DEPLOYMENT</div>
+          <p style="font-size: 13px; color: #888; margin-top: 0.5rem;">최종 결과물 배포 및 시연.</p>
+        </div>
+      </div>
     </div>
 
-    <div class="barcode"></div>
   </div>
+
+  <footer style="padding: 4rem 2rem; text-align: center; border-top: 1px solid var(--border); margin-top: 4rem;">
+    <div style="font-family: 'Fira Code'; font-size: 12px; color: #555;">
+      &copy; 2026 WINGCRAFT. EXECUTED BY 2-MAN SQUAD.
+    </div>
+  </footer>
 </body>
 </html>
