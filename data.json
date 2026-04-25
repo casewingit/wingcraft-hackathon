@@ -13,29 +13,32 @@
     {
       "id": 1,
       "round": "RD.01: GENESIS",
-      "date": "2026.04.12",
+      "date": "2026.03.14 (토)",
       "status": "COMPLETED",
       "statusBadge": "ARCHIVED",
       "badgeClass": "completed",
-      "link": "history/round1.html"
+      "link": "history/round1.html",
+      "details": "STATUS: COMPLETED\nDATE: 2026.03.14 (토)\nTIME: 11:30 START\nLOCATION: 망포역 김성민커피\nPARTICIPANTS: 다훈, 효진\nNOTES: 첫 번째 해커톤 세션."
     },
     {
       "id": 2,
       "round": "RD.02: MAIN BUILD",
-      "date": "PRESENT / LIVE NOW",
+      "date": "2026.05.16 (토)",
       "status": "LIVE",
       "statusBadge": "LIVE",
       "badgeClass": "live",
-      "link": null
+      "link": null,
+      "details": "STATUS: LIVE\nDATE: 2026.05.16 (토)\nLOCATION: 망포역 김성민커피\nPARTICIPANTS: 다훈, 효진\nORGANIZER: wingcraft\nTOPIC: 공모전 뽀개기"
     },
     {
       "id": 3,
       "round": "RD.03: DEPLOY",
-      "date": "COMING SOON / MAY 2026",
+      "date": "COMING SOON",
       "status": "UPCOMING",
       "statusBadge": "SOON",
       "badgeClass": "upcoming",
-      "link": null
+      "link": null,
+      "details": "STATUS: UPCOMING\nDATE: COMING SOON\nNOTES: 3회차 해커톤 준비 중."
     },
     {
       "id": 4,
@@ -44,19 +47,8 @@
       "status": "UPCOMING",
       "statusBadge": "PLANNED",
       "badgeClass": "upcoming",
-      "link": null
-    }
-  ],
-  "opportunities": [
-    {
-      "title": "K-Startup",
-      "desc": "중기부 주관 창업 지원 및 인공지능 분야 공모전",
-      "url": "https://www.k-startup.go.kr"
-    },
-    {
-      "title": "NIPA",
-      "desc": "정보통신산업진흥원 AI 바우처 및 전략사업 공고",
-      "url": "https://www.nipa.kr"
+      "link": null,
+      "details": "STATUS: UPCOMING\nDATE: JUNE 2026\nNOTES: 서비스 확장 및 최적화 단계 예정."
     }
   ]
 }
