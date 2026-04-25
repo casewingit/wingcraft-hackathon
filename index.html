@@ -97,30 +97,28 @@
       max-width: 800px;
       overflow-y: scroll;
       scroll-snap-type: y mandatory;
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none; /* IE 10+ */
-      perspective: 1200px;
-      mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
-      -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
-    }
-
-    .picker-container::-webkit-scrollbar {
-      display: none; /* Chrome/Safari */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      perspective: 2000px; /* 원근감 강화 */
+      mask-image: linear-gradient(to bottom, transparent, black 25%, black 75%, transparent);
+      -webkit-mask-image: linear-gradient(to bottom, transparent, black 25%, black 75%, transparent);
     }
 
     .picker-list {
-      padding: 200px 0; /* To allow scrolling first/last items to center */
+      padding: 200px 0;
       transform-style: preserve-3d;
     }
 
     .picker-item {
-      height: 100px;
+      height: 120px; /* 높이 약간 조절 */
       display: flex;
       align-items: center;
       justify-content: center;
       scroll-snap-align: center;
-      transition: all 0.3s ease;
+      scroll-snap-stop: always; /* 하나씩 걸리는 느낌 */
+      transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); /* 더 부드러운 가속도 */
       cursor: pointer;
+      will-change: transform, opacity;
     }
 
     .event-card {
@@ -132,18 +130,29 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: all 0.3s ease;
+      transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
     }
 
     .picker-item.active .event-card {
       border-color: var(--emerald-signal);
-      box-shadow: 0 0 20px rgba(0, 217, 146, 0.1);
-      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(0, 217, 146, 0.15);
+      background: rgba(16, 16, 16, 0.8);
+      transform: scale(1.15); /* 중앙 항목 더 크게 */
+    }
+
+    /* 비활성 항목 원근감 강화 */
+    .picker-item:not(.active) {
+      filter: blur(1px); /* 살짝 흐리게 처리하여 거리감 부여 */
     }
 
     .event-info h2 {
       font-size: 2.5rem;
       margin-bottom: 0.25rem;
+      transition: color 0.3s;
+    }
+
+    .picker-item.active .event-info h2 {
+      color: var(--emerald-signal);
     }
 
     .event-info p {
@@ -364,7 +373,7 @@
 
     // Initial scroll to active item (RD.02)
     const activeIndex = 1;
-    picker.scrollTop = activeIndex * 100;
+    picker.scrollTop = activeIndex * 120; // 높이 변경 반영
 
     const updatePicker = () => {
       const center = picker.scrollTop + picker.offsetHeight / 2;
@@ -372,17 +381,18 @@
       items.forEach(item => {
         const itemCenter = item.offsetTop + item.offsetHeight / 2;
         const distance = Math.abs(center - itemCenter);
-        const normalizedDistance = Math.min(distance / 250, 1);
+        const normalizedDistance = Math.min(distance / 300, 1);
         
-        // 3D Wheel Effect
-        const rotation = (itemCenter - center) / 4;
-        const scale = 1 - (normalizedDistance * 0.2);
-        const opacity = 1 - (normalizedDistance * 0.7);
+        // 3D Wheel Effect 강화
+        const rotation = (itemCenter - center) / 2.5; // 더 가파르게 회전
+        const scale = 1 - (normalizedDistance * 0.4); // 더 작게 축소
+        const opacity = 1 - (normalizedDistance * 0.8);
+        const zTranslate = -normalizedDistance * 200; // 뒤로 밀어내기
         
-        item.style.transform = `rotateX(${rotation}deg) scale(${scale})`;
+        item.style.transform = `rotateX(${rotation}deg) scale(${scale}) translateZ(${zTranslate}px)`;
         item.style.opacity = opacity;
 
-        if (distance < 50) {
+        if (distance < 60) {
           item.classList.add('active');
         } else {
           item.classList.remove('active');
@@ -397,7 +407,7 @@
     items.forEach((item, index) => {
       item.addEventListener('click', () => {
         picker.scrollTo({
-          top: index * 100,
+          top: index * 120,
           behavior: 'smooth'
         });
       });
