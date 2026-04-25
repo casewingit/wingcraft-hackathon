@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WINGCRAFT HACKATHON 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --abyss-black: #050507;
+      --carbon-surface: #101010;
+      --emerald-signal: #00d992;
+      --voltagent-mint: #2fd6a1;
+      --warm-charcoal: #3d3a39;
+      --snow-white: #f2f2f2;
+      --warm-parchment: #b8b3b0;
+      --steel-slate: #8b949e;
+      --glow: drop-shadow(0 0 4px var(--emerald-signal));
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: var(--abyss-black);
+      color: var(--snow-white);
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 2rem;
+      overflow-x: hidden;
+    }
+
+    /* Poster Container */
+    .poster {
+      width: 100%;
+      max-width: 800px;
+      background-color: var(--carbon-surface);
+      border: 2px solid var(--warm-charcoal);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      padding: 4rem 3rem;
+      box-shadow: rgba(0, 0, 0, 0.8) 0px 40px 100px;
+    }
+
+    /* Background Large Text */
+    .bg-text {
+      position: absolute;
+      font-size: 25vw;
+      font-weight: 900;
+      color: rgba(61, 58, 57, 0.1);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-90deg);
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 0;
+    }
+
+    /* Decorative Lines & Metadata */
+    .metadata {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      font-family: monospace;
+      font-size: 10px;
+      color: var(--steel-slate);
+      letter-spacing: 1px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .barcode {
+      position: absolute;
+      bottom: 1rem;
+      right: 1rem;
+      width: 100px;
+      height: 30px;
+      background: repeating-linear-gradient(90deg, var(--warm-charcoal), var(--warm-charcoal) 1px, transparent 1px, transparent 4px);
+      opacity: 0.5;
+    }
+
+    /* Header Section */
+    header {
+      position: relative;
+      z-index: 1;
+      border-bottom: 4px solid var(--emerald-signal);
+      padding-bottom: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .festival-tag {
+      font-weight: 700;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--emerald-signal);
+      font-size: 14px;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    h1 {
+      font-family: system-ui;
+      font-size: 80px;
+      font-weight: 900;
+      line-height: 0.9;
+      letter-spacing: -3px;
+      text-transform: uppercase;
+    }
+
+    h1 span {
+      display: block;
+      color: var(--abyss-black);
+      -webkit-text-stroke: 1px var(--emerald-signal);
+      filter: var(--glow);
+    }
+
+    /* Lineup Style Schedule */
+    .lineup {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 4rem;
+    }
+
+    .lineup-item {
+      display: flex;
+      align-items: baseline;
+      border-bottom: 1px dashed var(--warm-charcoal);
+      padding: 1.5rem 0;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .lineup-item:hover {
+      background-color: rgba(0, 217, 146, 0.05);
+      padding-left: 1rem;
+      border-bottom-color: var(--emerald-signal);
+    }
+
+    .lineup-item.active {
+      color: var(--emerald-signal);
+    }
+
+    .round {
+      font-size: 18px;
+      font-weight: 700;
+      width: 80px;
+      font-family: monospace;
+    }
+
+    .title {
+      font-size: 32px;
+      font-weight: 800;
+      flex: 1;
+      text-transform: uppercase;
+    }
+
+    .date-info {
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--warm-parchment);
+    }
+
+    /* Info Grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      border-top: 1px solid var(--warm-charcoal);
+      padding-top: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .info-box h3 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--steel-slate);
+      margin-bottom: 0.5rem;
+    }
+
+    .info-box p {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--snow-white);
+    }
+
+    /* Footer Pulse */
+    .pulse-container {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding-top: 3rem;
+    }
+
+    .pulse {
+      width: 12px;
+      height: 12px;
+      background-color: var(--emerald-signal);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--emerald-signal);
+      animation: heartbeat 1.5s infinite;
+    }
+
+    @keyframes heartbeat {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.5); opacity: 0.5; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 50px; }
+      .title { font-size: 24px; }
+      .poster { padding: 2rem 1.5rem; }
+      .info-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-text">2026</div>
+
+  <div class="poster">
+    <div class="metadata">
+      <span>REF: WINGCRAFT-HACK-02</span>
+      <span>LOC: 37.2396° N, 127.0617° E</span>
+      <span>VER: 1.0.4</span>
+    </div>
+
+    <header>
+      <span class="festival-tag">Engineering Festival</span>
+      <h1>Wingcraft<span>Hackathon</span></h1>
+    </header>
+
+    <div class="lineup">
+      <div class="lineup-item active">
+        <span class="round">RD.02</span>
+        <span class="title">Main Stage Build</span>
+        <span class="date-info">MAY 15 / 2026</span>
+      </div>
+
+      <a href="history/round1.html" class="lineup-item">
+        <span class="round">RD.01</span>
+        <span class="title">The Genesis</span>
+        <span class="date-info">APR 12 / 2026</span>
+      </a>
+
+      <div class="lineup-item" style="opacity: 0.3;">
+        <span class="round">RD.03</span>
+        <span class="title">Coming Soon</span>
+        <span class="date-info">TBA</span>
+      </div>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-box">
+        <h3>Location</h3>
+        <p>망포역 김성민커피</p>
+      </div>
+      <div class="info-box">
+        <h3>Theme</h3>
+        <p>Agnostic Build</p>
+      </div>
+      <div class="info-box">
+        <h3>Entry</h3>
+        <p>Engineers Only</p>
+      </div>
+      <div class="info-box">
+        <h3>Hardware</h3>
+        <p>Bring Your Own</p>
+      </div>
+    </div>
+
+    <div class="pulse-container">
+      <div class="pulse"></div>
+      <span style="font-size: 14px; font-weight: 700; letter-spacing: 1px;">SYSTEM ACTIVE / SIGNAL DETECTED</span>
+    </div>
+
+    <div class="barcode"></div>
+  </div>
+</body>
+</html>
