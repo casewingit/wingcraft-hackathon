@@ -1,4 +1,4 @@
-<!-- DEPLOY TRIGGER: 2026-04-26 01:08 -->
+<!-- DEPLOY TRIGGER: 2026-04-26 01:15 -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -99,10 +99,12 @@
       scroll-snap-type: y mandatory;
       scrollbar-width: none;
       -ms-overflow-style: none;
-      perspective: 2000px; /* 원근감 강화 */
+      perspective: 2000px;
       mask-image: linear-gradient(to bottom, transparent, black 25%, black 75%, transparent);
       -webkit-mask-image: linear-gradient(to bottom, transparent, black 25%, black 75%, transparent);
     }
+
+    .picker-container::-webkit-scrollbar { display: none; }
 
     .picker-list {
       padding: 200px 0;
@@ -110,13 +112,13 @@
     }
 
     .picker-item {
-      height: 120px; /* 높이 약간 조절 */
+      height: 120px;
       display: flex;
       align-items: center;
       justify-content: center;
       scroll-snap-align: center;
-      scroll-snap-stop: always; /* 하나씩 걸리는 느낌 */
-      transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); /* 더 부드러운 가속도 */
+      scroll-snap-stop: always;
+      transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
       cursor: pointer;
       will-change: transform, opacity;
     }
@@ -131,19 +133,18 @@
       justify-content: space-between;
       align-items: center;
       transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+      text-decoration: none;
+      color: inherit;
     }
 
     .picker-item.active .event-card {
       border-color: var(--emerald-signal);
       box-shadow: 0 0 30px rgba(0, 217, 146, 0.15);
       background: rgba(16, 16, 16, 0.8);
-      transform: scale(1.15); /* 중앙 항목 더 크게 */
+      transform: scale(1.15);
     }
 
-    /* 비활성 항목 원근감 강화 */
-    .picker-item:not(.active) {
-      filter: blur(1px); /* 살짝 흐리게 처리하여 거리감 부여 */
-    }
+    .picker-item:not(.active) { filter: blur(1px); }
 
     .event-info h2 {
       font-size: 2.5rem;
@@ -151,9 +152,7 @@
       transition: color 0.3s;
     }
 
-    .picker-item.active .event-info h2 {
-      color: var(--emerald-signal);
-    }
+    .picker-item.active .event-info h2 { color: var(--emerald-signal); }
 
     .event-info p {
       color: var(--steel-slate);
@@ -170,21 +169,10 @@
       border: 1px solid var(--warm-charcoal);
     }
 
-    .status-badge.live {
-      color: var(--volt-mint);
-      border-color: var(--emerald-signal);
-      background: rgba(0, 217, 146, 0.05);
-    }
+    .status-badge.live { color: var(--volt-mint); border-color: var(--emerald-signal); background: rgba(0, 217, 146, 0.05); }
+    .status-badge.completed { color: var(--steel-slate); }
+    .status-badge.upcoming { color: var(--warm-parchment); }
 
-    .status-badge.completed {
-      color: var(--steel-slate);
-    }
-
-    .status-badge.upcoming {
-      color: var(--warm-parchment);
-    }
-
-    /* Selection Overlays */
     .selection-overlay {
       position: absolute;
       top: 50%;
@@ -199,7 +187,6 @@
       z-index: 10;
     }
 
-    /* Widgets Section */
     .widgets-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -239,18 +226,16 @@
       transition: border-color 0.2s;
     }
 
-    .opp-item:hover {
-      border-color: var(--emerald-signal);
-    }
+    .opp-item:hover { border-color: var(--emerald-signal); }
+    .opp-item h4 { margin-bottom: 0.25rem; color: var(--snow-white); }
+    .opp-item p { font-size: 0.875rem; color: var(--steel-slate); }
 
-    .opp-item h4 {
-      margin-bottom: 0.25rem;
-      color: var(--snow-white);
-    }
-
-    .opp-item p {
-      font-size: 0.875rem;
-      color: var(--steel-slate);
+    .member-badge {
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border: 1px solid var(--warm-charcoal);
+      border-radius: 4px;
+      margin-right: 0.5rem;
     }
 
     footer {
@@ -271,94 +256,34 @@
 </head>
 <body>
   <div class="container">
-    <header>
+    <header id="mainHeader">
       <a href="index.html" class="logo">
         <div class="logo-icon"></div>
         <span>WINGCRAFT HACK-HUB</span>
       </a>
-      <div style="font-size: 0.75rem; color: var(--steel-slate); font-family: monospace; text-align: right;">
-        [ STATUS: RD.02 ACTIVE ]<br>
-        [ LAST PUSH: 01:08 AM ]
-      </div>
+      <!-- Status will be injected here -->
     </header>
 
     <section class="hero-rolling-section">
       <div class="selection-overlay"></div>
       <div class="picker-container" id="eventPicker">
-        <div class="picker-list">
-          <!-- Past -->
-          <div class="picker-item" data-id="1">
-            <a href="history/round1.html" class="event-card">
-              <div class="event-info">
-                <h2>RD.01: GENESIS</h2>
-                <p>2026.04.12 / COMPLETED</p>
-              </div>
-              <span class="status-badge completed">ARCHIVED</span>
-            </a>
-          </div>
-          <!-- Present -->
-          <div class="picker-item" data-id="2">
-            <div class="event-card">
-              <div class="event-info">
-                <h2>RD.02: MAIN BUILD</h2>
-                <p>PRESENT / LIVE NOW</p>
-              </div>
-              <span class="status-badge live">LIVE</span>
-            </div>
-          </div>
-          <!-- Future -->
-          <div class="picker-item" data-id="3">
-            <div class="event-card">
-              <div class="event-info">
-                <h2>RD.03: DEPLOY</h2>
-                <p>COMING SOON / MAY 2026</p>
-              </div>
-              <span class="status-badge upcoming">SOON</span>
-            </div>
-          </div>
-          <!-- Future Placeholder -->
-          <div class="picker-item" data-id="4">
-            <div class="event-card">
-              <div class="event-info">
-                <h2>RD.04: SCALE</h2>
-                <p>PLANNED / JUNE 2026</p>
-              </div>
-              <span class="status-badge upcoming">PLANNED</span>
-            </div>
-          </div>
+        <div class="picker-list" id="eventList">
+          <!-- Events will be injected here -->
         </div>
       </div>
     </section>
 
     <div class="widgets-grid">
-      <div class="widget">
-        <div class="widget-header">
-          <span class="widget-label">PROJECT STATUS</span>
-          <span style="color: var(--volt-mint);">● LIVE</span>
-        </div>
-        <h3 style="margin-bottom: 1rem;">RD.02 BUILDING PHASE</h3>
-        <p style="color: var(--warm-parchment); font-size: 0.9375rem; margin-bottom: 2rem;">
-          2인의 엔지니어가 모여 아이디어를 검증하고 프로토타입을 제작하는 고집적 해커톤 세션입니다.
-        </p>
-        <div style="display: flex; gap: 0.5rem;">
-          <span style="font-size: 0.75rem; padding: 4px 8px; border: 1px solid var(--warm-charcoal); border-radius: 4px;">MEMBER A</span>
-          <span style="font-size: 0.75rem; padding: 4px 8px; border: 1px solid var(--warm-charcoal); border-radius: 4px;">MEMBER B</span>
-        </div>
+      <div class="widget" id="statusWidget">
+        <!-- Status Widget content injected here -->
       </div>
 
-      <div class="widget">
+      <div class="widget" id="oppWidget">
         <div class="widget-header">
           <span class="widget-label">OPPORTUNITY RADAR</span>
         </div>
-        <div class="opp-list">
-          <a href="https://www.k-startup.go.kr" target="_blank" class="opp-item">
-            <h4>K-Startup</h4>
-            <p>중기부 주관 창업 지원 및 인공지능 분야 공모전</p>
-          </a>
-          <a href="https://www.nipa.kr" target="_blank" class="opp-item">
-            <h4>NIPA</h4>
-            <p>정보통신산업진흥원 AI 바우처 및 전략사업 공고</p>
-          </a>
+        <div class="opp-list" id="oppList">
+          <!-- Opportunities injected here -->
         </div>
       </div>
     </div>
@@ -369,50 +294,116 @@
   </div>
 
   <script>
-    const picker = document.getElementById('eventPicker');
-    const items = document.querySelectorAll('.picker-item');
+    async function loadData() {
+      try {
+        const response = await fetch('data.json');
+        const data = await response.json();
+        renderPage(data);
+      } catch (error) {
+        console.error('Error loading data:', error);
+      }
+    }
 
-    // Initial scroll to active item (RD.02)
-    const activeIndex = 1;
-    picker.scrollTop = activeIndex * 120; // 높이 변경 반영
+    function renderPage(data) {
+      // 1. Header Status
+      document.getElementById('mainHeader').insertAdjacentHTML('beforeend', `
+        <div style="font-size: 0.75rem; color: var(--steel-slate); font-family: monospace; text-align: right;">
+          [ STATUS: ${data.projectInfo.status} ]<br>
+          [ LAST PUSH: ${data.projectInfo.lastPush} ]
+        </div>
+      `);
 
-    const updatePicker = () => {
-      const center = picker.scrollTop + picker.offsetHeight / 2;
-      
-      items.forEach(item => {
-        const itemCenter = item.offsetTop + item.offsetHeight / 2;
-        const distance = Math.abs(center - itemCenter);
-        const normalizedDistance = Math.min(distance / 300, 1);
+      // 2. Rolling Events
+      const eventList = document.getElementById('eventList');
+      data.events.forEach(event => {
+        const item = document.createElement('div');
+        item.className = 'picker-item';
+        item.setAttribute('data-id', event.id);
         
-        // 3D Wheel Effect 강화
-        const rotation = (itemCenter - center) / 2.5; // 더 가파르게 회전
-        const scale = 1 - (normalizedDistance * 0.4); // 더 작게 축소
-        const opacity = 1 - (normalizedDistance * 0.8);
-        const zTranslate = -normalizedDistance * 200; // 뒤로 밀어내기
-        
-        item.style.transform = `rotateX(${rotation}deg) scale(${scale}) translateZ(${zTranslate}px)`;
-        item.style.opacity = opacity;
-
-        if (distance < 60) {
-          item.classList.add('active');
-        } else {
-          item.classList.remove('active');
-        }
+        const content = `
+          <${event.link ? `a href="${event.link}"` : 'div'} class="event-card">
+            <div class="event-info">
+              <h2>${event.round}</h2>
+              <p>${event.date} / ${event.status}</p>
+            </div>
+            <span class="status-badge ${event.badgeClass}">${event.statusBadge}</span>
+          </${event.link ? 'a' : 'div'}>
+        `;
+        item.innerHTML = content;
+        eventList.appendChild(item);
       });
-    };
 
-    picker.addEventListener('scroll', updatePicker);
-    window.addEventListener('load', updatePicker);
-    
-    // Click to scroll
-    items.forEach((item, index) => {
-      item.addEventListener('click', () => {
-        picker.scrollTo({
-          top: index * 120,
-          behavior: 'smooth'
+      // 3. Status Widget
+      const statusWidget = document.getElementById('statusWidget');
+      statusWidget.innerHTML = `
+        <div class="widget-header">
+          <span class="widget-label">PROJECT STATUS</span>
+          <span style="color: var(--volt-mint);">● LIVE</span>
+        </div>
+        <h3 style="margin-bottom: 1rem;">${data.projectInfo.phase}</h3>
+        <p style="color: var(--warm-parchment); font-size: 0.9375rem; margin-bottom: 2rem;">
+          ${data.projectInfo.description}
+        </p>
+        <div style="display: flex; gap: 0.5rem;">
+          ${data.members.map(m => `<span class="member-badge">${m.name.toUpperCase()}</span>`).join('')}
+        </div>
+      `;
+
+      // 4. Opportunities
+      const oppList = document.getElementById('oppList');
+      data.opportunities.forEach(opp => {
+        oppList.insertAdjacentHTML('beforeend', `
+          <a href="${opp.url}" target="_blank" class="opp-item">
+            <h4>${opp.title}</h4>
+            <p>${opp.desc}</p>
+          </a>
+        `);
+      });
+
+      // Initialize Picker Logic
+      initPicker();
+    }
+
+    function initPicker() {
+      const picker = document.getElementById('eventPicker');
+      const items = document.querySelectorAll('.picker-item');
+
+      picker.scrollTop = 1 * 120; // Default to RD.02
+
+      const updatePicker = () => {
+        const center = picker.scrollTop + picker.offsetHeight / 2;
+        items.forEach(item => {
+          const itemCenter = item.offsetTop + item.offsetHeight / 2;
+          const distance = Math.abs(center - itemCenter);
+          const normalizedDistance = Math.min(distance / 300, 1);
+          
+          const rotation = (itemCenter - center) / 2.5;
+          const scale = 1 - (normalizedDistance * 0.4);
+          const opacity = 1 - (normalizedDistance * 0.8);
+          const zTranslate = -normalizedDistance * 200;
+          
+          item.style.transform = `rotateX(${rotation}deg) scale(${scale}) translateZ(${zTranslate}px)`;
+          item.style.opacity = opacity;
+
+          if (distance < 60) item.classList.add('active');
+          else item.classList.remove('active');
+        });
+      };
+
+      picker.addEventListener('scroll', updatePicker);
+      window.addEventListener('load', updatePicker);
+      
+      items.forEach((item, index) => {
+        item.addEventListener('click', () => {
+          picker.scrollTo({ top: index * 120, behavior: 'smooth' });
         });
       });
-    });
+      
+      // Initial trigger
+      updatePicker();
+    }
+
+    loadData();
   </script>
 </body>
 </html>

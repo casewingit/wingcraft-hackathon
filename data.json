@@ -1,0 +1,62 @@
+{
+  "projectInfo": {
+    "status": "RD.02 ACTIVE",
+    "lastPush": "01:12 AM",
+    "phase": "RD.02 BUILDING PHASE",
+    "description": "2인의 엔지니어가 모여 아이디어를 검증하고 프로토타입을 제작하는 고집적 해커톤 세션입니다."
+  },
+  "members": [
+    { "name": "Member A", "role": "Engineer" },
+    { "name": "Member B", "role": "Engineer" }
+  ],
+  "events": [
+    {
+      "id": 1,
+      "round": "RD.01: GENESIS",
+      "date": "2026.04.12",
+      "status": "COMPLETED",
+      "statusBadge": "ARCHIVED",
+      "badgeClass": "completed",
+      "link": "history/round1.html"
+    },
+    {
+      "id": 2,
+      "round": "RD.02: MAIN BUILD",
+      "date": "PRESENT / LIVE NOW",
+      "status": "LIVE",
+      "statusBadge": "LIVE",
+      "badgeClass": "live",
+      "link": null
+    },
+    {
+      "id": 3,
+      "round": "RD.03: DEPLOY",
+      "date": "COMING SOON / MAY 2026",
+      "status": "UPCOMING",
+      "statusBadge": "SOON",
+      "badgeClass": "upcoming",
+      "link": null
+    },
+    {
+      "id": 4,
+      "round": "RD.04: SCALE",
+      "date": "PLANNED / JUNE 2026",
+      "status": "UPCOMING",
+      "statusBadge": "PLANNED",
+      "badgeClass": "upcoming",
+      "link": null
+    }
+  ],
+  "opportunities": [
+    {
+      "title": "K-Startup",
+      "desc": "중기부 주관 창업 지원 및 인공지능 분야 공모전",
+      "url": "https://www.k-startup.go.kr"
+    },
+    {
+      "title": "NIPA",
+      "desc": "정보통신산업진흥원 AI 바우처 및 전략사업 공고",
+      "url": "https://www.nipa.kr"
+    }
+  ]
+}
