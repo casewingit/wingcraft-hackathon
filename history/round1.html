@@ -3,10 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wingcraft Hackathon 2026 - 1차 기록</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <title>Terminal - RD.01 FIRST STEP</title>
   <style>
     :root {
       --abyss-black: #050507;
@@ -14,7 +11,6 @@
       --emerald-signal: #00d992;
       --warm-charcoal: #3d3a39;
       --snow-white: #f2f2f2;
-      --warm-parchment: #b8b3b0;
       --steel-slate: #8b949e;
     }
 
@@ -23,123 +19,197 @@
     body {
       background-color: var(--abyss-black);
       color: var(--snow-white);
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
-      padding: 2rem;
+      padding: 20px;
+      overflow: hidden;
     }
 
-    .archive-poster {
+    .terminal-window {
       width: 100%;
-      max-width: 600px;
-      background-color: var(--carbon-surface);
+      max-width: 900px;
+      height: 80vh;
+      background: rgba(0, 0, 0, 0.9);
       border: 1px solid var(--warm-charcoal);
-      border-radius: 8px;
-      padding: 3rem;
+      border-radius: 12px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      animation: windowOpen 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @media (max-width: 768px) {
+      .terminal-window { height: 90vh; }
+      .terminal-body { padding: 20px; font-size: 14px; }
+    }
+
+    @keyframes windowOpen {
+      from { opacity: 0; transform: scale(0.95) translateY(20px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .terminal-header {
+      background: #323232;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      border-top-left-radius: 11px;
+      border-top-right-radius: 11px;
       position: relative;
     }
 
-    .archive-poster::after {
-      content: 'ARCHIVED';
+    .traffic-lights {
+      display: flex;
+      gap: 8px;
+    }
+
+    .light {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .red { background: #ff5f56; border: 0.5px solid #e0443e; }
+    .yellow { background: #ffbd2e; border: 0.5px solid #dea123; }
+    .green { background: #27c93f; border: 0.5px solid #1aab29; }
+
+    .terminal-title {
       position: absolute;
-      top: 1rem;
-      right: 1rem;
-      font-size: 12px;
-      font-weight: 700;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 13px;
       color: var(--steel-slate);
-      letter-spacing: 2px;
-      border: 1px solid var(--warm-charcoal);
-      padding: 4px 8px;
-      border-radius: 4px;
-    }
-
-    .badge {
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--emerald-signal);
-      margin-bottom: 1rem;
-      display: block;
-    }
-
-    h1 {
-      font-family: system-ui;
-      font-size: 48px;
-      line-height: 1.0;
-      letter-spacing: -0.65px;
-      margin-bottom: 1rem;
-    }
-
-    .date {
-      font-size: 18px;
-      color: var(--warm-parchment);
-      margin-bottom: 2rem;
-    }
-
-    .content-box {
-      border-top: 1px solid var(--warm-charcoal);
-      padding-top: 2rem;
-      margin-top: 2rem;
-    }
-
-    .detail-item {
-      margin-bottom: 1.5rem;
-    }
-
-    .label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--steel-slate);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      display: block;
-      margin-bottom: 0.25rem;
-    }
-
-    .value {
-      font-size: 18px;
-      color: var(--snow-white);
-    }
-
-    .back-link {
-      display: inline-block;
-      margin-top: 3rem;
-      color: var(--emerald-signal);
-      text-decoration: none;
-      font-size: 14px;
       font-weight: 500;
     }
 
-    .back-link:hover {
-      text-decoration: underline;
+    .terminal-body {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .prompt { color: var(--emerald-signal); margin-right: 10px; }
+    .command { color: var(--snow-white); }
+    .output { color: #dcdcdc; margin-top: 10px; margin-bottom: 20px; white-space: pre-wrap; }
+    
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 17px;
+      background: var(--emerald-signal);
+      vertical-align: middle;
+      margin-left: 4px;
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .back-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--carbon-surface);
+      border: 1px solid var(--warm-charcoal);
+      color: var(--snow-white);
+      padding: 10px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 14px;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .back-btn:hover {
+      border-color: var(--emerald-signal);
+      color: var(--emerald-signal);
     }
   </style>
 </head>
 <body>
-  <div class="archive-poster">
-    <span class="badge">Round 01</span>
-    <h1>1차 해커톤</h1>
-    <p class="date">2026.04.12</p>
-
-    <div class="content-box">
-      <div class="detail-item">
-        <span class="label">Status</span>
-        <span class="value" style="color: var(--emerald-signal);">COMPLETED</span>
+  <div class="terminal-window">
+    <div class="terminal-header">
+      <div class="traffic-lights">
+        <div class="light red" onclick="location.href='../index.html'"></div>
+        <div class="light yellow"></div>
+        <div class="light green"></div>
       </div>
-      <div class="detail-item">
-        <span class="label">Location</span>
-        <span class="value">망포역 김성민커피</span>
-      </div>
-      <div class="detail-item">
-        <span class="label">Notes</span>
-        <span class="value">첫 번째 해커톤 세션. 개발 환경 셋업 및 프로토타입 구현 완료.</span>
-      </div>
+      <div class="terminal-title">wingcraft — rd.01_first_step.log — 80x24</div>
     </div>
-
-    <a href="../index.html" class="back-link">← Back to Main Terminal</a>
+    <div class="terminal-body" id="terminalContent"></div>
   </div>
+
+  <a href="../index.html" class="back-btn">
+    <span>←</span> EXIT_TERMINAL
+  </a>
+
+  <script>
+    const content = document.getElementById('terminalContent');
+    const details = `STATUS: COMPLETED
+DATE: 2026.03.14 (토)
+TIME: 11:30 START
+LOCATION: 망포역 김성민커피
+PARTICIPANTS: 다훈, 효진
+TOPIC: Wingcraft Hackathon Genesis
+NOTES: 첫 번째 해커톤 세션. 개발 환경 셋업 및 프로토타입 v0.1 빌드 완료.
+--------------------------------------------------
+[SYSTEM] Initializing Hackathon Environment...
+[LOG] 11:30 AM - Session Started
+[LOG] 01:00 PM - Core Logic Architecture Design
+[LOG] 04:00 PM - Initial Prototype Implementation
+[SYSTEM] Session RD.01 successfully archived.`;
+
+    async function startTerminal() {
+      const line1 = createLine();
+      line1.innerHTML = '<span class="prompt">user@wingcraft:~/hackathon$</span><span class="command"></span><span class="cursor"></span>';
+      content.appendChild(line1);
+      
+      const cmdSpan = line1.querySelector('.command');
+      const cmdText = 'cat RD.01_FIRST_STEP_LOG.md';
+      
+      for(let char of cmdText) {
+        cmdSpan.textContent += char;
+        await wait(50);
+      }
+      
+      line1.querySelector('.cursor').remove();
+      await wait(300);
+
+      const output = document.createElement('div');
+      output.className = 'output';
+      content.appendChild(output);
+      
+      const lines = details.split('\n');
+      for(let line of lines) {
+        output.textContent += line + '\n';
+        await wait(20);
+      }
+
+      const finalLine = createLine();
+      finalLine.innerHTML = '<span class="prompt">user@wingcraft:~/hackathon$</span><span class="cursor"></span>';
+      content.appendChild(finalLine);
+    }
+
+    function createLine() {
+      const div = document.createElement('div');
+      div.style.marginBottom = '5px';
+      return div;
+    }
+
+    function wait(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    window.onload = startTerminal;
+  </script>
 </body>
 </html>

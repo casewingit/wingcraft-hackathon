@@ -12,13 +12,13 @@
   "events": [
     {
       "id": 1,
-      "round": "RD.01: GENESIS",
-      "date": "2026.04.12 (일)",
+      "round": "RD.01: FIRST STEP",
+      "date": "2026.03.14 (토)",
       "status": "COMPLETED",
       "statusBadge": "ARCHIVED",
       "badgeClass": "completed",
       "link": "history/round1.html",
-      "details": "STATUS: COMPLETED\nDATE: 2026.04.12 (일)\nTIME: 11:30 START\nLOCATION: 망포역 김성민커피\nPARTICIPANTS: 다훈, 효진\nNOTES: 첫 번째 해커톤 세션. 프로토타입 v0.1 빌드 완료."
+      "details": "STATUS: COMPLETED\nDATE: 2026.03.14 (토)\nTIME: 11:30 START\nLOCATION: 망포역 김성민커피\nPARTICIPANTS: 다훈, 효진\nNOTES: 첫 번째 해커톤 세션. 개발 환경 셋업 및 프로토타입 v0.1 빌드 완료."
     },
     {
       "id": 2,
