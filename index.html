@@ -195,6 +195,58 @@
       gap: 2rem;
     }
 
+    /* Invite Widget Styles */
+    .invite-form {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .invite-input {
+      flex: 1;
+      background: #000;
+      border: 1px solid var(--warm-charcoal);
+      border-radius: 4px;
+      padding: 0.75rem 1rem;
+      color: var(--snow-white);
+      font-family: 'SFMono-Regular', monospace;
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .invite-input:focus {
+      border-color: var(--emerald-signal);
+    }
+
+    .invite-button {
+      background: var(--carbon-surface);
+      border: 1px solid var(--warm-charcoal);
+      border-radius: 4px;
+      padding: 0 1.5rem;
+      color: var(--volt-mint);
+      font-family: 'SFMono-Regular', monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .invite-button:hover {
+      background: rgba(0, 217, 146, 0.1);
+      border-color: var(--emerald-signal);
+    }
+
+    .accepted-badge {
+      font-size: 0.65rem;
+      padding: 2px 6px;
+      background: rgba(0, 217, 146, 0.2);
+      color: var(--emerald-signal);
+      border-radius: 4px;
+      margin-left: 0.5rem;
+      border: 1px solid var(--emerald-signal);
+    }
+
     .widget {
       background: var(--carbon-surface);
       border: 1px solid var(--warm-charcoal);
@@ -439,17 +491,24 @@
         </div>
       `;
       
+      // Check for accepted invitations in localStorage
+      const acceptedInvites = JSON.parse(localStorage.getItem('accepted_invites') || '[]');
+
       // Members Widget
-      const membersHtml = data.members.map(m => `
-        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
-          <span class="member-badge">
-            <span style="color: var(--emerald-signal)">@</span>${m.name} <span style="color: var(--steel-slate); font-size: 10px;">[${m.role}]</span>
-          </span>
-          <span style="color: var(--steel-slate); font-size: 11px; font-family: 'SFMono-Regular', monospace; opacity: 0.8;">
-            ${m.email}
-          </span>
-        </div>
-      `).join('');
+      const membersHtml = data.members.map(m => {
+        const isAccepted = acceptedInvites.includes(m.email);
+        return `
+          <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+            <span class="member-badge">
+              <span style="color: var(--emerald-signal)">@</span>${m.name} <span style="color: var(--steel-slate); font-size: 10px;">[${m.role}]</span>
+            </span>
+            <span style="color: var(--steel-slate); font-size: 11px; font-family: 'SFMono-Regular', monospace; opacity: 0.8;">
+              ${m.email}
+            </span>
+            ${isAccepted ? '<span class="accepted-badge">ACCEPTED</span>' : ''}
+          </div>
+        `;
+      }).join('');
       
       const membersWidget = `
         <div class="widget">
@@ -461,11 +520,64 @@
           </div>
         </div>
       `;
+
+      // Invitation Widget
+      const inviteWidget = `
+        <div class="widget">
+          <div class="widget-header">
+            <div class="widget-label">INVITE COLLABORATOR</div>
+          </div>
+          <p style="color: var(--steel-slate); font-size: 0.75rem; margin-bottom: 1rem;">
+            Enter an email to send a hackathon invitation link.
+          </p>
+          <div class="invite-form">
+            <input type="email" id="inviteEmail" class="invite-input" placeholder="engineer@wingcraft.io">
+            <button onclick="sendInvite()" class="invite-button">SEND INVITE</button>
+          </div>
+        </div>
+      `;
       
-      widgetsGrid.innerHTML = projectWidget + membersWidget;
+      widgetsGrid.innerHTML = projectWidget + membersWidget + inviteWidget;
 
       // Initialize Picker Logic
       initPicker();
+      checkInvitation();
+    }
+
+    function sendInvite() {
+      const email = document.getElementById('inviteEmail').value;
+      if (!email || !email.includes('@')) {
+        alert('Please enter a valid email address.');
+        return;
+      }
+
+      const subject = encodeURIComponent('Invitation: WINGCRAFT HACK-HUB 2026');
+      const body = encodeURIComponent(`You are invited to join WINGCRAFT HACK-HUB 2026.\n\nAccept Invitation: ${window.location.origin}${window.location.pathname}?invite=accepted&email=${email}\n\nSee you in the terminal.`);
+      
+      window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+    }
+
+    function checkInvitation() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const inviteStatus = urlParams.get('invite');
+      const email = urlParams.get('email');
+
+      if (inviteStatus === 'accepted' && email) {
+        let acceptedInvites = JSON.parse(localStorage.getItem('accepted_invites') || '[]');
+        if (!acceptedInvites.includes(email)) {
+          acceptedInvites.push(email);
+          localStorage.setItem('accepted_invites', JSON.stringify(acceptedInvites));
+          
+          // Clear URL params without refreshing
+          window.history.replaceState({}, document.title, window.location.pathname);
+          
+          // Re-render members list (simplified)
+          loadData();
+          
+          // Show success message in console
+          console.log(`[SYSTEM] Invitation accepted for: ${email}`);
+        }
+      }
     }
 
     function handleCardClick(eventId, event) {
