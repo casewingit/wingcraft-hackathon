@@ -1,8 +1,8 @@
 {
   "projectInfo": {
-    "status": "RD.02 ACTIVE",
+    "status": "EP.02 ACTIVE",
     "lastPush": "01:12 AM",
-    "phase": "RD.02 BUILDING PHASE",
+    "phase": "EP.02 BUILDING PHASE",
     "description": "Wingcraft 해커톤은 2인의 엔지니어가 기술적 제약을 넘어 아이디어를 빠르게 검증하고, 고집적 빌딩을 통해 실질적인 프로토타입을 실현하는 창의적 엔지니어링 세션입니다."
   },
   "members": [
@@ -12,7 +12,7 @@
   "events": [
     {
       "id": 1,
-      "round": "RD.01: FIRST STEP",
+      "round": "EP.01: FIRST STEP",
       "date": "2026.03.14 (토)",
       "status": "COMPLETED",
       "statusBadge": "ARCHIVED",
@@ -22,7 +22,7 @@
     },
     {
       "id": 2,
-      "round": "RD.02: MAIN BUILD",
+      "round": "EP.02: MAIN BUILD",
       "date": "2026.04.26 (일)",
       "status": "LIVE",
       "statusBadge": "LIVE",
@@ -32,7 +32,7 @@
     },
     {
       "id": 3,
-      "round": "RD.03: DEPLOY",
+      "round": "EP.03: DEPLOY",
       "date": "COMING SOON",
       "status": "UPCOMING",
       "statusBadge": "SOON",
@@ -42,7 +42,7 @@
     },
     {
       "id": 4,
-      "round": "RD.04: SCALE",
+      "round": "EP.04: SCALE",
       "date": "PLANNED / JUNE 2026",
       "status": "UPCOMING",
       "statusBadge": "PLANNED",

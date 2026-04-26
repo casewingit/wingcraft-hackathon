@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Terminal - RD.01 FIRST STEP</title>
+  <title>Terminal - EP.01 FIRST STEP</title>
   <style>
     :root {
       --abyss-black: #050507;
@@ -166,7 +166,7 @@ NOTES: 첫 번째 해커톤 세션. 개발 환경 셋업 및 프로토타입 v0.
 [LOG] 11:30 AM - Session Started
 [LOG] 01:00 PM - Core Logic Architecture Design
 [LOG] 04:00 PM - Initial Prototype Implementation
-[SYSTEM] Session RD.01 successfully archived.`;
+[SYSTEM] Session EP.01 successfully archived.`;
 
     async function startTerminal() {
       const line1 = createLine();
@@ -174,7 +174,7 @@ NOTES: 첫 번째 해커톤 세션. 개발 환경 셋업 및 프로토타입 v0.
       content.appendChild(line1);
       
       const cmdSpan = line1.querySelector('.command');
-      const cmdText = 'cat RD.01_FIRST_STEP_LOG.md';
+      const cmdText = 'cat EP.01_FIRST_STEP_LOG.md';
       
       for(let char of cmdText) {
         cmdSpan.textContent += char;

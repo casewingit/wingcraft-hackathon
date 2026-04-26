@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Terminal - RD.02 MAIN BUILD</title>
+  <title>Terminal - EP.02 MAIN BUILD</title>
   <style>
     :root {
       --abyss-black: #050507;
@@ -172,7 +172,7 @@ NOTES: 실시간 터미널 인터페이스 및 자동화 로직 구현 중.
 [LOG] 01:12 AM - Updated data.json structures
 [LOG] 01:15 AM - Refined Terminal Modal CSS
 [LOG] 01:20 AM - Fixed viewport scaling issues
-[SYSTEM] Session RD.02 is currently stable.`;
+[SYSTEM] Session EP.02 is currently stable.`;
 
     async function startTerminal() {
       // 1. Initial Prompt
@@ -181,7 +181,7 @@ NOTES: 실시간 터미널 인터페이스 및 자동화 로직 구현 중.
       content.appendChild(line1);
       
       const cmdSpan = line1.querySelector('.command');
-      const cmdText = 'cat RD.02_MAIN_BUILD_LOG.md';
+      const cmdText = 'cat EP.02_MAIN_BUILD_LOG.md';
       
       for(let char of cmdText) {
         cmdSpan.textContent += char;
