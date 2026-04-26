@@ -38,17 +38,7 @@
       "statusBadge": "SOON",
       "badgeClass": "upcoming",
       "link": null,
-      "details": "STATUS: UPCOMING\nDATE: COMING SOON\nNOTES: 3회차 해커톤 준비 중."
-    },
-    {
-      "id": 4,
-      "round": "EP.04: SCALE",
-      "date": "PLANNED / JUNE 2026",
-      "status": "UPCOMING",
-      "statusBadge": "PLANNED",
-      "badgeClass": "upcoming",
-      "link": null,
-      "details": "STATUS: UPCOMING\nDATE: JUNE 2026\nNOTES: 서비스 확장 및 최적화 단계 예정."
+      "details": "STATUS: UPCOMING\nDATE: COMING SOON\nNOTES: 3회차 해커톤 준비 중입니다. 새로운 도전을 기대해 주세요."
     }
   ]
 }
