@@ -143,7 +143,7 @@
         <div class="light yellow"></div>
         <div class="light green"></div>
       </div>
-      <div class="terminal-title">wingcraft — rd.01_first_step.log — 80x24</div>
+      <div class="terminal-title">wingcraft — ep.01_first_step.log — 80x24</div>
     </div>
     <div class="terminal-body" id="terminalContent"></div>
   </div>
@@ -154,6 +154,7 @@
 
   <script>
     const content = document.getElementById('terminalContent');
+    
     const details = `STATUS: COMPLETED
 DATE: 2026.03.14 (토)
 TIME: 11:30 START
@@ -196,6 +197,7 @@ NOTES: 첫 번째 해커톤 세션. 개발 환경 셋업 및 프로토타입 v0.
 
       const finalLine = createLine();
       finalLine.innerHTML = '<span class="prompt">user@wingcraft:~/hackathon$</span><span class="cursor"></span>';
+      container = content; // legacy compatibility
       content.appendChild(finalLine);
     }
 
