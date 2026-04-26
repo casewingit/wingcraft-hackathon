@@ -815,10 +815,10 @@
       const actionBox = document.createElement('div');
       actionBox.className = 'terminal-invite-box';
       actionBox.innerHTML = `
-        <div class="terminal-invite-header">[ACTION] SYNCHRONIZE WITH LOCAL CALENDAR</div>
+        <div class="terminal-invite-header">[ACTION] SYNCHRONIZE WITH APPLE / GOOGLE CALENDAR</div>
         <div class="calendar-actions">
+          <button onclick="downloadICS(${eventData.id})" class="terminal-btn">APPLE_CALENDAR</button>
           <button onclick="addToGoogleCalendar(${eventData.id})" class="terminal-btn">GOOGLE_CALENDAR</button>
-          <button onclick="downloadICS(${eventData.id})" class="terminal-btn">DOWNLOAD_ICS</button>
         </div>
       `;
       container.appendChild(actionBox);
@@ -829,7 +829,7 @@
       const event = projectData.events.find(e => e.id === eventId);
       const dateParts = event.date.split(' ')[0].split('.');
       const dateStr = dateParts[0] + dateParts[1] + dateParts[2];
-      const start = `${dateStr}T110000Z`;
+      const start = `${dateStr}T113000Z`;
       const end = `${dateStr}T200000Z`;
       
       const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.round)}&dates=${start}/${end}&details=${encodeURIComponent(event.details)}&location=${encodeURIComponent('수원 망포역')}`;
@@ -839,25 +839,36 @@
     function downloadICS(eventId) {
       const event = projectData.events.find(e => e.id === eventId);
       const dateParts = event.date.split(' ')[0].split('.');
-      const dateStr = dateParts[0] + dateParts[1] + dateParts[2];
+      const dateStr = `${dateParts[0]}${dateParts[1]}${dateParts[2]}`;
       
       const icsContent = [
         'BEGIN:VCALENDAR',
         'VERSION:2.0',
+        'PRODID:-//Wingcraft//Hackathon//KO',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
         'BEGIN:VEVENT',
-        `DTSTART:${dateStr}T110000Z`,
-        `DTEND:${dateStr}T200000Z`,
         `SUMMARY:${event.round}`,
+        `UID:${Date.now()}@wingcraft.io`,
+        `DTSTART;TZID=Asia/Seoul:${dateStr}T113000`,
+        `DTEND;TZID=Asia/Seoul:${dateStr}T200000`,
         `DESCRIPTION:${event.details.replace(/\n/g, '\\n')}`,
-        'LOCATION:Suwon Mangpo Station',
+        'LOCATION:수원 망포역 (Mangpo Station)',
+        'STATUS:CONFIRMED',
+        'SEQUENCE:0',
+        'BEGIN:VALARM',
+        'TRIGGER:-PT30M',
+        'DESCRIPTION:Wingcraft Hackathon Reminder',
+        'ACTION:DISPLAY',
+        'END:VALARM',
         'END:VEVENT',
         'END:VCALENDAR'
-      ].join('\n');
+      ].join('\r\n');
 
       const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
       const link = document.createElement('a');
       link.href = window.URL.createObjectURL(blob);
-      link.setAttribute('download', `hackathon_ep${eventId}.ics`);
+      link.setAttribute('download', `wingcraft_${event.id}.ics`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
