@@ -11,15 +11,38 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      EMAILJS_PUBLIC_KEY: ${{ secrets.EMAILJS_PUBLIC_KEY }}
+      EMAILJS_SERVICE_ID: ${{ secrets.EMAILJS_SERVICE_ID }}
+      EMAILJS_TEMPLATE_ID: ${{ secrets.EMAILJS_TEMPLATE_ID }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Inject EmailJS Keys
         run: |
-          sed -i "s/YOUR_PUBLIC_KEY/${{ secrets.EMAILJS_PUBLIC_KEY }}/g" index.html
-          sed -i "s/YOUR_SERVICE_ID/${{ secrets.EMAILJS_SERVICE_ID }}/g" index.html
-          sed -i "s/YOUR_TEMPLATE_ID/${{ secrets.EMAILJS_TEMPLATE_ID }}/g" index.html
+          python3 - <<'PY'
+          from pathlib import Path
+          import os
+
+          index_path = Path("index.html")
+          html = index_path.read_text()
+
+          replacements = {
+              "YOUR_PUBLIC_KEY": os.environ["EMAILJS_PUBLIC_KEY"],
+              "YOUR_SERVICE_ID": os.environ["EMAILJS_SERVICE_ID"],
+              "YOUR_TEMPLATE_ID": os.environ["EMAILJS_TEMPLATE_ID"],
+          }
+
+          missing = [name for name, value in replacements.items() if not value]
+          if missing:
+              raise SystemExit(f"Missing GitHub secrets: {', '.join(missing)}")
+
+          for placeholder, value in replacements.items():
+              html = html.replace(placeholder, value)
+
+          index_path.write_text(html)
+          PY
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
