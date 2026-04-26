@@ -441,9 +441,14 @@
       
       // Members Widget
       const membersHtml = data.members.map(m => `
-        <span class="member-badge">
-          <span style="color: var(--emerald-signal)">@</span>${m.name} <span style="color: var(--steel-slate); font-size: 10px;">[${m.role}]</span>
-        </span>
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+          <span class="member-badge">
+            <span style="color: var(--emerald-signal)">@</span>${m.name} <span style="color: var(--steel-slate); font-size: 10px;">[${m.role}]</span>
+          </span>
+          <span style="color: var(--steel-slate); font-size: 11px; font-family: 'SFMono-Regular', monospace; opacity: 0.8;">
+            ${m.email}
+          </span>
+        </div>
       `).join('');
       
       const membersWidget = `
@@ -451,7 +456,7 @@
           <div class="widget-header">
             <div class="widget-label">SQUAD MEMBERS</div>
           </div>
-          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+          <div style="display: flex; flex-direction: column; gap: 0.25rem;">
             ${membersHtml}
           </div>
         </div>
