@@ -234,8 +234,16 @@
     }
 
     @media (max-width: 768px) {
+      header { margin-bottom: 2rem; padding: 1rem 0; }
       .event-info h2 { font-size: 1.5rem; }
       .event-card { padding: 1rem; }
+      .hero-rolling-section { height: 60vh; margin-bottom: 3rem; }
+      .picker-container { height: 400px; }
+      .picker-item { height: 100px; }
+      .picker-list { padding: 150px 0; }
+      .selection-overlay { height: 90px; }
+      .terminal-body { padding: 20px; font-size: 14px; }
+      .widgets-grid { margin-bottom: 3rem; padding: 0 1rem; }
     }
 
     /* Terminal UI Styles */
@@ -467,11 +475,12 @@
       const targetItem = items[targetIndex];
       const itemCenter = targetItem.offsetTop + targetItem.offsetHeight / 2;
       
-      // 모바일 편의를 위해 판정 범위를 100px로 넓힘 (기존 60px)
-      if (Math.abs(center - itemCenter) < 100) {
+      const itemHeight = window.innerWidth < 768 ? 100 : 120;
+      
+      if (Math.abs(center - itemCenter) < itemHeight / 2) {
         openTerminal(eventId);
       } else {
-        picker.scrollTo({ top: targetIndex * 120, behavior: 'smooth' });
+        picker.scrollTo({ top: targetIndex * itemHeight, behavior: 'smooth' });
       }
     }
 
@@ -556,8 +565,9 @@
     function initPicker() {
       const picker = document.getElementById('eventPicker');
       const items = document.querySelectorAll('.picker-item');
+      const itemHeight = window.innerWidth < 768 ? 100 : 120;
 
-      picker.scrollTop = 1 * 120; // Default to RD.02
+      picker.scrollTop = 1 * itemHeight; // Default to RD.02
 
       const updatePicker = () => {
         const center = picker.scrollTop + picker.offsetHeight / 2;
@@ -574,7 +584,7 @@
           item.style.transform = `rotateX(${rotation}deg) scale(${scale}) translateZ(${zTranslate}px)`;
           item.style.opacity = opacity;
 
-          if (distance < 60) item.classList.add('active');
+          if (distance < itemHeight / 2) item.classList.add('active');
           else item.classList.remove('active');
         });
       };
@@ -584,7 +594,7 @@
       
       items.forEach((item, index) => {
         item.addEventListener('click', () => {
-          picker.scrollTo({ top: index * 120, behavior: 'smooth' });
+          picker.scrollTo({ top: index * itemHeight, behavior: 'smooth' });
         });
       });
       
