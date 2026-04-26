@@ -27,7 +27,7 @@
       "status": "LIVE",
       "statusBadge": "LIVE",
       "badgeClass": "live",
-      "link": null,
+      "link": "history/round2.html",
       "details": "STATUS: ACTIVE / LIVE\nDATE: 2026.04.26 (일)\nLOCATION: 수원 망포역\nPARTICIPANTS: 다훈, 효진\nTOPIC: VoltAgent 기반 해커톤 허브 구축\nNOTES: 실시간 터미널 인터페이스 및 자동화 로직 구현 중."
     },
     {

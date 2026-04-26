@@ -347,6 +347,10 @@
       </div>
     </section>
 
+    <div class="widgets-grid" id="widgetsGrid">
+      <!-- Widgets will be injected here -->
+    </div>
+
     <footer>
       &copy; 2026 WINGCRAFT. EXECUTED BY 2-MAN SQUAD.
     </footer>
@@ -410,6 +414,42 @@
         item.innerHTML = content;
         eventList.appendChild(item);
       });
+
+      // 3. Widgets (Project Info & Members)
+      const widgetsGrid = document.getElementById('widgetsGrid');
+      
+      // Project Info Widget
+      const projectWidget = `
+        <div class="widget">
+          <div class="widget-header">
+            <div class="widget-label">PROJECT PHASE</div>
+            <div class="status-badge live" style="font-size: 10px;">${data.projectInfo.phase}</div>
+          </div>
+          <p style="color: var(--warm-parchment); font-size: 0.9rem; margin-bottom: 1.5rem; line-height: 1.6;">
+            ${data.projectInfo.description}
+          </p>
+        </div>
+      `;
+      
+      // Members Widget
+      const membersHtml = data.members.map(m => `
+        <span class="member-badge">
+          <span style="color: var(--emerald-signal)">@</span>${m.name} <span style="color: var(--steel-slate); font-size: 10px;">[${m.role}]</span>
+        </span>
+      `).join('');
+      
+      const membersWidget = `
+        <div class="widget">
+          <div class="widget-header">
+            <div class="widget-label">SQUAD MEMBERS</div>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            ${membersHtml}
+          </div>
+        </div>
+      `;
+      
+      widgetsGrid.innerHTML = projectWidget + membersWidget;
 
       // Initialize Picker Logic
       initPicker();
