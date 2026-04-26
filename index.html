@@ -651,8 +651,9 @@
         !EMAILJS_CONFIG.publicKey ||
         !EMAILJS_CONFIG.serviceId ||
         !EMAILJS_CONFIG.templateId ||
-        EMAILJS_CONFIG.serviceId === 'YOUR_SERVICE_ID' ||
-        EMAILJS_CONFIG.templateId === 'YOUR_TEMPLATE_ID'
+        EMAILJS_CONFIG.publicKey.startsWith('YOUR_') ||
+        EMAILJS_CONFIG.serviceId.startsWith('YOUR_') ||
+        EMAILJS_CONFIG.templateId.startsWith('YOUR_')
       ) {
         console.error('EmailJS config is incomplete:', EMAILJS_CONFIG);
         alert('Email is not sent because EmailJS service/template IDs are still placeholders in index.html.');
