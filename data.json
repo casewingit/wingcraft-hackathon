@@ -36,7 +36,7 @@
         "flexxiblethinking@gmail.com": "SENT",
         "rosiewingit@gmail.com": "SENT"
       },
-      "details": "STATUS: ACTIVE / LIVE\nDATE: 2026.05.16 (토)\nLOCATION: 수원 망포역\nPARTICIPANTS: 다훈, 효진\nINVITATION: SENT (flexxiblethinking@gmail.com, rosiewingit@gmail.com)\nCALENDAR: SYNCED 🟢\nTOPIC: 신규 아이디어 도출\nNOTES: 실시간 터미널 인터페이스 및 자동화 로직 구현 중."
+      "details": "STATUS: ACTIVE / LIVE\nDATE: 2026.05.16 (토)\nLOCATION: 수원 망포역\nPARTICIPANTS: 다훈, 효진\nINVITATION: SENT (flexxiblethinking@gmail.com, rosiewingit@gmail.com)\nCHECK-IN: MANUAL CONFIRMATION\nTOPIC: 신규 아이디어 도출\nNOTES: 실시간 터미널 인터페이스 및 자동화 로직 구현 중."
     },
     {
       "id": 3,
@@ -50,7 +50,7 @@
         "flexxiblethinking@gmail.com": "PENDING",
         "rosiewingit@gmail.com": "PENDING"
       },
-      "details": "STATUS: UPCOMING\nDATE: COMING SOON\nINVITATION: SENT (flexxiblethinking@gmail.com, rosiewingit@gmail.com)\nCALENDAR: SYNCED 🟢\nNOTES: 3회차 해커톤 준비 중입니다. 새로운 도전을 기대해 주세요."
+      "details": "STATUS: UPCOMING\nDATE: COMING SOON\nINVITATION: SENT (flexxiblethinking@gmail.com, rosiewingit@gmail.com)\nCHECK-IN: MANUAL CONFIRMATION\nNOTES: 3회차 해커톤 준비 중입니다. 새로운 도전을 기대해 주세요."
     }
   ]
 }
