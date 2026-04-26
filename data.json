@@ -3,7 +3,7 @@
     "status": "RD.02 ACTIVE",
     "lastPush": "01:12 AM",
     "phase": "RD.02 BUILDING PHASE",
-    "description": "2인의 엔지니어가 모여 아이디어를 검증하고 프로토타입을 제작하는 고집적 해커톤 세션입니다."
+    "description": "Wingcraft 해커톤은 2인의 엔지니어가 기술적 제약을 넘어 아이디어를 빠르게 검증하고, 고집적 빌딩을 통해 실질적인 프로토타입을 실현하는 창의적 엔지니어링 세션입니다."
   },
   "members": [
     { "name": "다훈", "role": "Engineer" },
