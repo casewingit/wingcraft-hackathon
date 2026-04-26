@@ -143,7 +143,6 @@
         <div class="light yellow"></div>
         <div class="light green"></div>
       </div>
-      <!-- [UPDATE] 타이틀 수정 -->
       <div class="terminal-title">wingcraft — ep.xx_title.log — 80x24</div>
     </div>
     <div class="terminal-body" id="terminalContent"></div>
@@ -156,17 +155,19 @@
   <script>
     const content = document.getElementById('terminalContent');
     
-    // [UPDATE] 아래 내용을 해당 회차 정보로 수정
-    const details = `STATUS: COMPLETED
-DATE: 202X.XX.XX
-LOCATION: 
+    const details = `STATUS: COMPLETED / ACTIVE / UPCOMING
+DATE: 202X.XX.XX (요일)
+TIME: 11:30 START
+LOCATION: 장소 입력
 PARTICIPANTS: 다훈, 효진
-TOPIC: 
-NOTES: 
+TOPIC: 이번 회차 주제 입력
+OUTCOME: 핵심 결과 한 줄 요약
+NOTES: 세션 메모 입력
 --------------------------------------------------
-[SYSTEM] Fetching logs...
-[LOG] 00:00 AM - Event 1
-[LOG] 00:00 AM - Event 2
+[SYSTEM] Fetching session logs...
+[LOG] 11:30 AM - Kickoff
+[LOG] 01:30 PM - Main build checkpoint
+[LOG] 05:30 PM - Wrap-up
 [SYSTEM] Session EP.XX is archived.`;
 
     async function startTerminal() {
@@ -176,7 +177,6 @@ NOTES:
       
       const cmdSpan = line1.querySelector('.command');
       
-      // [UPDATE] 명령어 텍스트 수정
       const cmdText = 'cat EP.XX_TITLE_LOG.md';
       
       for(let char of cmdText) {

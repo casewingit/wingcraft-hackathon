@@ -480,10 +480,30 @@
       opacity: 0.5;
     }
 
-    .calendar-actions {
-      display: flex;
+    .terminal-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 10px;
-      margin-top: 15px;
+      margin-top: 14px;
+    }
+
+    .summary-item {
+      border: 1px solid var(--warm-charcoal);
+      border-radius: 4px;
+      padding: 10px 12px;
+      background: rgba(0, 0, 0, 0.35);
+    }
+
+    .summary-label {
+      display: block;
+      font-size: 11px;
+      color: var(--steel-slate);
+      margin-bottom: 4px;
+    }
+
+    .summary-value {
+      color: var(--snow-white);
+      font-size: 13px;
     }
   </style>
 </head>
@@ -708,7 +728,7 @@
             to_email: member.email,
             round: activeEvent.round,
             message: `You are invited to join the ${activeEvent.round} session.`,
-            link: `${window.location.origin}${window.location.pathname}?invite=accepted&eventId=${activeEvent.id}&email=${member.email}&autoCalendar=1`
+            link: `${window.location.origin}${window.location.pathname}?invite=accepted&eventId=${activeEvent.id}&email=${member.email}`
           });
           
           console.log(`Invite successfully sent to ${member.name} (${member.email})`);
@@ -733,8 +753,6 @@
       const inviteStatus = urlParams.get('invite');
       const eventId = parseInt(urlParams.get('eventId'));
       const email = urlParams.get('email');
-      const autoCalendar = urlParams.get('autoCalendar') !== '0';
-
       if (inviteStatus === 'accepted' && email) {
         if (eventId) {
           // Episode-specific acceptance
@@ -751,7 +769,7 @@
             acceptedEvent.invitations = acceptedEvent.invitations || {};
             acceptedEvent.invitations[email] = 'ACCEPTED';
           }
-          openTerminal(eventId, true, { autoCalendar });
+          openTerminal(eventId, true);
         } else {
           // Global acceptance
           let acceptedInvites = JSON.parse(localStorage.getItem('accepted_invites') || '[]');
@@ -788,7 +806,7 @@
       }
     }
 
-    function openTerminal(eventId, isAcceptance = false, options = {}) {
+    function openTerminal(eventId, isAcceptance = false) {
       const eventData = projectData.events.find(e => e.id === eventId);
       if (!eventData) return;
 
@@ -805,7 +823,7 @@
 
       if (isAcceptance) {
         lines.push({ text: `\n[SUCCESS] INVITATION ACCEPTED FOR ${eventData.round}`, delay: 0 });
-        lines.push({ text: `[SYSTEM] Generating calendar synchronization tokens...`, delay: 50 });
+        lines.push({ text: `[SYSTEM] Session manifest updated. Check the confirmed slot below.`, delay: 50 });
       } else if (eventData.link) {
         lines.push({ text: `\n[SYSTEM] External Archive detected.`, delay: 0 });
         lines.push({ text: `[SYSTEM] Opening ${eventData.link}...`, delay: 50 });
@@ -816,12 +834,7 @@
 
       typeTerminal(content, lines).then(() => {
         if (isAcceptance) {
-          renderCalendarActions(content, eventData);
-          if (options.autoCalendar) {
-            setTimeout(() => {
-              triggerCalendarSync(eventData.id, { preferOpen: true });
-            }, 450);
-          }
+          renderAcceptanceSummary(content, eventData);
         }
       });
     }
@@ -872,95 +885,33 @@
       }
     }
 
-    function renderCalendarActions(container, eventData) {
+    function renderAcceptanceSummary(container, eventData) {
       const actionBox = document.createElement('div');
       actionBox.className = 'terminal-invite-box';
       actionBox.innerHTML = `
-        <div class="terminal-invite-header">[ACTION] SYNCHRONIZE WITH APPLE / GOOGLE CALENDAR</div>
-        <div class="output-line" style="margin-bottom: 14px;">> ACCEPT 직후 Apple Calendar 열기를 자동 시도합니다. 차단되면 아래 버튼으로 다시 실행하세요.</div>
-        <div class="calendar-actions">
-          <button onclick="downloadICS(${eventData.id})" class="terminal-btn">APPLE_CALENDAR</button>
-          <button onclick="addToGoogleCalendar(${eventData.id})" class="terminal-btn">GOOGLE_CALENDAR</button>
+        <div class="terminal-invite-header">[CONFIRMED] SESSION DETAILS LOCKED</div>
+        <div class="output-line" style="margin-bottom: 14px;">> 캘린더 연동은 제외하고, 이번 회차 정보만 여기서 바로 확인할 수 있게 정리했습니다.</div>
+        <div class="terminal-summary">
+          <div class="summary-item">
+            <span class="summary-label">ROUND</span>
+            <span class="summary-value">${eventData.round}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">DATE</span>
+            <span class="summary-value">${eventData.date}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">LOCATION</span>
+            <span class="summary-value">수원 망포역</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">STATUS</span>
+            <span class="summary-value">INVITE_ACCEPTED</span>
+          </div>
         </div>
       `;
       container.appendChild(actionBox);
       container.scrollTop = container.scrollHeight;
-    }
-
-    function getEventDateParts(event) {
-      const dateToken = event.date.split(' ')[0];
-      const [year, month, day] = dateToken.split('.');
-      return { year, month, day, dateStr: `${year}${month}${day}` };
-    }
-
-    function escapeICSValue(value) {
-      return String(value)
-        .replace(/\\/g, '\\\\')
-        .replace(/\r?\n/g, '\\n')
-        .replace(/,/g, '\\,')
-        .replace(/;/g, '\\;');
-    }
-
-    function buildICSContent(event) {
-      const { dateStr } = getEventDateParts(event);
-      return [
-        'BEGIN:VCALENDAR',
-        'VERSION:2.0',
-        'PRODID:-//Wingcraft//Hackathon//KO',
-        'CALSCALE:GREGORIAN',
-        'METHOD:PUBLISH',
-        'BEGIN:VEVENT',
-        `SUMMARY:${escapeICSValue(event.round)}`,
-        `UID:wingcraft-${event.id}@wingcraft.io`,
-        `DTSTART;TZID=Asia/Seoul:${dateStr}T113000`,
-        `DTEND;TZID=Asia/Seoul:${dateStr}T200000`,
-        `DESCRIPTION:${escapeICSValue(event.details)}`,
-        `LOCATION:${escapeICSValue('수원 망포역 (Mangpo Station)')}`,
-        'STATUS:CONFIRMED',
-        'SEQUENCE:0',
-        'BEGIN:VALARM',
-        'TRIGGER:-PT30M',
-        'DESCRIPTION:Wingcraft Hackathon Reminder',
-        'ACTION:DISPLAY',
-        'END:VALARM',
-        'END:VEVENT',
-        'END:VCALENDAR'
-      ].join('\r\n');
-    }
-
-    function triggerCalendarSync(eventId, options = {}) {
-      const event = projectData.events.find(e => e.id === eventId);
-      if (!event || event.date === 'COMING SOON') return;
-
-      const icsContent = buildICSContent(event);
-      const encoded = encodeURIComponent(icsContent);
-      const dataUrl = `data:text/calendar;charset=utf-8,${encoded}`;
-
-      if (options.preferOpen) {
-        window.location.href = dataUrl;
-        return;
-      }
-
-      const link = document.createElement('a');
-      link.href = dataUrl;
-      link.setAttribute('download', `wingcraft_${event.id}.ics`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    function addToGoogleCalendar(eventId) {
-      const event = projectData.events.find(e => e.id === eventId);
-      const { dateStr } = getEventDateParts(event);
-      const start = `${dateStr}T113000Z`;
-      const end = `${dateStr}T200000Z`;
-      
-      const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.round)}&dates=${start}/${end}&details=${encodeURIComponent(event.details)}&location=${encodeURIComponent('수원 망포역')}`;
-      window.open(url, '_blank');
-    }
-
-    function downloadICS(eventId) {
-      triggerCalendarSync(eventId);
     }
 
     // Close modal on click outside
