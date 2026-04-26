@@ -386,6 +386,70 @@
     .terminal-prompt { color: var(--emerald-signal); margin-right: 12px; }
     .command-text { color: var(--snow-white); }
     .output-line { color: var(--warm-parchment); margin-left: 24px; margin-bottom: 4px; }
+
+    /* Terminal Invite UI */
+    .terminal-invite-box {
+      margin-top: 20px;
+      padding: 20px;
+      border: 1px dashed var(--warm-charcoal);
+      border-radius: 4px;
+      background: rgba(16, 16, 16, 0.5);
+    }
+
+    .terminal-invite-header {
+      font-size: 12px;
+      color: var(--emerald-signal);
+      margin-bottom: 12px;
+      font-family: 'SFMono-Regular', monospace;
+    }
+
+    .terminal-input-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .terminal-input {
+      flex: 1;
+      background: #000;
+      border: 1px solid var(--warm-charcoal);
+      color: var(--snow-white);
+      padding: 8px 12px;
+      font-family: 'SFMono-Regular', monospace;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .terminal-input:focus {
+      border-color: var(--emerald-signal);
+    }
+
+    .terminal-btn {
+      background: var(--carbon-surface);
+      border: 1px solid var(--warm-charcoal);
+      color: var(--volt-mint);
+      padding: 8px 16px;
+      font-family: 'SFMono-Regular', monospace;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .terminal-btn:hover:not(:disabled) {
+      background: rgba(0, 217, 146, 0.1);
+      border-color: var(--emerald-signal);
+    }
+
+    .terminal-btn:disabled {
+      color: var(--steel-slate);
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .calendar-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
   </style>
 </head>
 <body>
@@ -521,7 +585,7 @@
         </div>
       `;
 
-      // Invitation Widget
+      // Invitation Widget (Global)
       const inviteWidget = `
         <div class="widget">
           <div class="widget-header">
@@ -560,23 +624,30 @@
     function checkInvitation() {
       const urlParams = new URLSearchParams(window.location.search);
       const inviteStatus = urlParams.get('invite');
+      const eventId = parseInt(urlParams.get('eventId'));
       const email = urlParams.get('email');
 
       if (inviteStatus === 'accepted' && email) {
-        let acceptedInvites = JSON.parse(localStorage.getItem('accepted_invites') || '[]');
-        if (!acceptedInvites.includes(email)) {
-          acceptedInvites.push(email);
-          localStorage.setItem('accepted_invites', JSON.stringify(acceptedInvites));
-          
-          // Clear URL params without refreshing
-          window.history.replaceState({}, document.title, window.location.pathname);
-          
-          // Re-render members list (simplified)
+        if (eventId) {
+          // Episode-specific acceptance
+          let acceptedInvites = JSON.parse(localStorage.getItem('accepted_invites_ep') || '{}');
+          if (!acceptedInvites[eventId]) {
+            acceptedInvites[eventId] = email;
+            localStorage.setItem('accepted_invites_ep', JSON.stringify(acceptedInvites));
+          }
+          openTerminal(eventId, true);
+        } else {
+          // Global acceptance
+          let acceptedInvites = JSON.parse(localStorage.getItem('accepted_invites') || '[]');
+          if (!acceptedInvites.includes(email)) {
+            acceptedInvites.push(email);
+            localStorage.setItem('accepted_invites', JSON.stringify(acceptedInvites));
+          }
           loadData();
-          
-          // Show success message in console
-          console.log(`[SYSTEM] Invitation accepted for: ${email}`);
         }
+        
+        // Clear URL params without refreshing
+        window.history.replaceState({}, document.title, window.location.pathname);
       }
     }
 
@@ -601,7 +672,7 @@
       }
     }
 
-    function openTerminal(eventId) {
+    function openTerminal(eventId, isAcceptance = false) {
       const eventData = projectData.events.find(e => e.id === eventId);
       if (!eventData) return;
 
@@ -611,12 +682,15 @@
       modal.style.display = 'flex';
       document.body.style.overflow = 'hidden';
 
-      const lines = [
-        { text: `user@wingcraft:~/hackathon$ cat ${eventData.round.replace(/:/g, '').replace(/ /g, '_')}_LOG.md`, delay: 40 },
+      let lines = [
+        { text: `user@wingcraft:~/hackathon$ cat EP_${eventId}_LOG.md`, delay: 40 },
         { text: eventData.details, delay: 0 }
       ];
 
-      if (eventData.link) {
+      if (isAcceptance) {
+        lines.push({ text: `\n[SUCCESS] INVITATION ACCEPTED FOR ${eventData.round}`, delay: 0 });
+        lines.push({ text: `[SYSTEM] Generating calendar synchronization tokens...`, delay: 50 });
+      } else if (eventData.link) {
         lines.push({ text: `\n[SYSTEM] External Archive detected.`, delay: 0 });
         lines.push({ text: `[SYSTEM] Opening ${eventData.link}...`, delay: 50 });
         setTimeout(() => {
@@ -624,7 +698,11 @@
         }, 2500);
       }
 
-      typeTerminal(content, lines);
+      typeTerminal(content, lines, isAcceptance ? null : eventId).then(() => {
+        if (isAcceptance) {
+          renderCalendarActions(content, eventData);
+        }
+      });
     }
 
     function closeTerminal() {
@@ -632,14 +710,13 @@
       document.body.style.overflow = 'auto';
     }
 
-    async function typeTerminal(container, lines) {
+    async function typeTerminal(container, lines, eventId = null) {
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         const lineElement = document.createElement('div');
         lineElement.style.marginBottom = '10px';
         
         if (line.text.startsWith('user@wingcraft')) {
-          // Command line
           lineElement.innerHTML = '<span class="terminal-prompt">user@wingcraft:~/hackathon$</span><span class="command-text"></span><span class="terminal-cursor"></span>';
           container.appendChild(lineElement);
           const commandSpan = lineElement.querySelector('.command-text');
@@ -652,7 +729,6 @@
           }
           cursor.remove();
         } else {
-          // Output lines
           await new Promise(r => setTimeout(r, 300));
           const outputLines = line.text.split('\n');
           for (let oLine of outputLines) {
@@ -663,15 +739,123 @@
             await new Promise(r => setTimeout(r, 30));
           }
           
-          // If it's the last line and not a redirect, show final prompt
-          if (i === lines.length - 1 && !line.text.includes('Opening')) {
-            const finalPrompt = document.createElement('div');
-            finalPrompt.innerHTML = '<span class="terminal-prompt">user@wingcraft:~/hackathon$</span><span class="terminal-cursor"></span>';
-            container.appendChild(finalPrompt);
+          if (i === lines.length - 1) {
+            if (eventId) {
+              renderTerminalInvite(container, eventId);
+            }
+            
+            if (!line.text.includes('Opening')) {
+              const finalPrompt = document.createElement('div');
+              finalPrompt.innerHTML = '<span class="terminal-prompt">user@wingcraft:~/hackathon$</span><span class="terminal-cursor"></span>';
+              container.appendChild(finalPrompt);
+            }
           }
         }
         container.scrollTop = container.scrollHeight;
       }
+    }
+
+    function renderTerminalInvite(container, eventId) {
+      const sentInvites = JSON.parse(localStorage.getItem('sent_invites') || '[]');
+      const isSent = sentInvites.includes(eventId);
+      
+      const inviteBox = document.createElement('div');
+      inviteBox.className = 'terminal-invite-box';
+      
+      if (isSent) {
+        inviteBox.innerHTML = `
+          <div class="terminal-invite-header">[SYSTEM] INVITATION ALREADY EXECUTED FOR EP.${eventId}</div>
+          <div style="color: var(--steel-slate); font-size: 13px;">Mail transmission locked to prevent spam.</div>
+        `;
+      } else {
+        inviteBox.innerHTML = `
+          <div class="terminal-invite-header">[ACTION] INVITE ENGINEER TO THIS EPISODE</div>
+          <div class="terminal-input-group">
+            <input type="email" id="termInviteEmail" class="terminal-input" placeholder="engineer@wingcraft.io">
+            <button onclick="sendEpisodeInvite(${eventId})" class="terminal-btn">SEND_INVITE</button>
+          </div>
+        `;
+      }
+      container.appendChild(inviteBox);
+    }
+
+    function sendEpisodeInvite(eventId) {
+      const email = document.getElementById('termInviteEmail').value;
+      if (!email || !email.includes('@')) {
+        alert('Invalid email address.');
+        return;
+      }
+
+      // Record sent status
+      let sentInvites = JSON.parse(localStorage.getItem('sent_invites') || '[]');
+      if (!sentInvites.includes(eventId)) {
+        sentInvites.push(eventId);
+        localStorage.setItem('sent_invites', JSON.stringify(sentInvites));
+      }
+
+      const eventData = projectData.events.find(e => e.id === eventId);
+      const subject = encodeURIComponent(`[INVITATION] Wingcraft Hackathon - ${eventData.round}`);
+      const body = encodeURIComponent(`You are invited to ${eventData.round} of Wingcraft Hackathon.\n\nDate: ${eventData.date}\n\nAccept Invitation & Add to Calendar: ${window.location.origin}${window.location.pathname}?invite=accepted&eventId=${eventId}&email=${email}\n\nTerminating...`);
+      
+      window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+      
+      // Update UI immediately
+      const box = document.querySelector('.terminal-invite-box');
+      if (box) {
+        box.innerHTML = `<div class="terminal-invite-header">[SYSTEM] INVITATION RECORDED AND TRANSMITTED.</div>`;
+      }
+    }
+
+    function renderCalendarActions(container, eventData) {
+      const actionBox = document.createElement('div');
+      actionBox.className = 'terminal-invite-box';
+      actionBox.innerHTML = `
+        <div class="terminal-invite-header">[ACTION] SYNCHRONIZE WITH LOCAL CALENDAR</div>
+        <div class="calendar-actions">
+          <button onclick="addToGoogleCalendar(${eventData.id})" class="terminal-btn">GOOGLE_CALENDAR</button>
+          <button onclick="downloadICS(${eventData.id})" class="terminal-btn">DOWNLOAD_ICS</button>
+        </div>
+      `;
+      container.appendChild(actionBox);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function addToGoogleCalendar(eventId) {
+      const event = projectData.events.find(e => e.id === eventId);
+      const dateParts = event.date.split(' ')[0].split('.');
+      const dateStr = dateParts[0] + dateParts[1] + dateParts[2];
+      const start = `${dateStr}T110000Z`;
+      const end = `${dateStr}T200000Z`;
+      
+      const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.round)}&dates=${start}/${end}&details=${encodeURIComponent(event.details)}&location=${encodeURIComponent('수원 망포역')}`;
+      window.open(url, '_blank');
+    }
+
+    function downloadICS(eventId) {
+      const event = projectData.events.find(e => e.id === eventId);
+      const dateParts = event.date.split(' ')[0].split('.');
+      const dateStr = dateParts[0] + dateParts[1] + dateParts[2];
+      
+      const icsContent = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'BEGIN:VEVENT',
+        `DTSTART:${dateStr}T110000Z`,
+        `DTEND:${dateStr}T200000Z`,
+        `SUMMARY:${event.round}`,
+        `DESCRIPTION:${event.details.replace(/\n/g, '\\n')}`,
+        'LOCATION:Suwon Mangpo Station',
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ].join('\n');
+
+      const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.setAttribute('download', `hackathon_ep${eventId}.ics`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
 
     // Close modal on click outside
