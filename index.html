@@ -535,6 +535,33 @@
   <script>
     let projectData = null;
 
+    function getAcceptedInvitesByEvent() {
+      const acceptedInvites = JSON.parse(localStorage.getItem('accepted_invites_ep') || '{}');
+      return Object.entries(acceptedInvites).reduce((acc, [eventId, value]) => {
+        if (Array.isArray(value)) {
+          acc[eventId] = value;
+        } else if (typeof value === 'string' && value) {
+          acc[eventId] = [value];
+        } else {
+          acc[eventId] = [];
+        }
+        return acc;
+      }, {});
+    }
+
+    function isInviteAccepted(eventId, email, fallbackStatus) {
+      if (fallbackStatus === 'ACCEPTED') return true;
+
+      const acceptedInvitesByEvent = getAcceptedInvitesByEvent();
+      const acceptedForEvent = acceptedInvitesByEvent[eventId] || [];
+      return acceptedForEvent.includes(email);
+    }
+
+    function getInviteStatus(event, email) {
+      const fallbackStatus = event.invitations?.[email] || 'PENDING';
+      return isInviteAccepted(event.id, email, fallbackStatus) ? 'ACCEPTED' : fallbackStatus;
+    }
+
     async function loadData() {
       try {
         const response = await fetch('data.json');
@@ -593,7 +620,7 @@
       // Members Widget
       const activeEvent = data.events.find(e => e.status === 'LIVE' || e.status === 'ACTIVE') || data.events[data.events.length - 1];
       const membersHtml = data.members.map(m => {
-        const inviteStatus = activeEvent.invitations ? activeEvent.invitations[m.email] : 'PENDING';
+        const inviteStatus = getInviteStatus(activeEvent, m.email);
         const statusClass = inviteStatus === 'ACCEPTED' ? 'accepted-badge' : (inviteStatus === 'SENT' ? 'sent-badge' : 'pending-badge');
         
         return `
@@ -611,7 +638,7 @@
         `;
       }).join('');
       
-      const needsInvites = data.members.some(m => !activeEvent.invitations || activeEvent.invitations[m.email] === 'PENDING');
+      const needsInvites = data.members.some(m => getInviteStatus(activeEvent, m.email) !== 'ACCEPTED');
       
       const membersWidget = `
         <div class="widget">
@@ -663,10 +690,10 @@
       }
 
       const activeEvent = projectData.events.find(e => e.status === 'LIVE' || e.status === 'ACTIVE') || projectData.events[projectData.events.length - 1];
-      const pendingMembers = projectData.members.filter(m => !activeEvent.invitations || activeEvent.invitations[m.email] === 'PENDING');
+      const pendingMembers = projectData.members.filter(m => getInviteStatus(activeEvent, m.email) !== 'ACCEPTED');
 
       if (pendingMembers.length === 0) {
-        alert('All squad members have already been invited.');
+        alert('All squad members have already accepted this invite.');
         btn.textContent = originalText;
         btn.disabled = false;
         return;
@@ -675,6 +702,7 @@
       try {
         for (const member of pendingMembers) {
           btn.textContent = `SENDING TO ${member.name}...`;
+
           await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
             to_name: member.name,
             to_email: member.email,
@@ -687,10 +715,11 @@
         }
 
         alert('Squad invites have been successfully triggered via EmailJS API.');
-        btn.textContent = 'INVITES SENT ✅';
+        btn.textContent = 'READY TO RESEND ✅';
+        btn.disabled = false;
         
         // 상태 업데이트 안내 (실제 서버가 없으므로 알림으로 대체)
-        console.log('NOTE: Please update data.json manually to reflect the "SENT" status.');
+        console.log('NOTE: Re-sending remains available until each recipient accepts the invite link.');
       } catch (error) {
         console.error('EmailJS Error:', error);
         alert('Failed to send invites. Check the EmailJS public key, service ID, template ID, and template variables in index.html.');
@@ -709,10 +738,18 @@
       if (inviteStatus === 'accepted' && email) {
         if (eventId) {
           // Episode-specific acceptance
-          let acceptedInvites = JSON.parse(localStorage.getItem('accepted_invites_ep') || '{}');
+          let acceptedInvites = getAcceptedInvitesByEvent();
           if (!acceptedInvites[eventId]) {
-            acceptedInvites[eventId] = email;
+            acceptedInvites[eventId] = [];
+          }
+          if (!acceptedInvites[eventId].includes(email)) {
+            acceptedInvites[eventId].push(email);
             localStorage.setItem('accepted_invites_ep', JSON.stringify(acceptedInvites));
+          }
+          const acceptedEvent = projectData?.events?.find(e => e.id === eventId);
+          if (acceptedEvent) {
+            acceptedEvent.invitations = acceptedEvent.invitations || {};
+            acceptedEvent.invitations[email] = 'ACCEPTED';
           }
           openTerminal(eventId, true, { autoCalendar });
         } else {
