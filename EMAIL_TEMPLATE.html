@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { background-color: #050507; color: #f2f2f2; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 40px auto; background-color: #101010; border: 1px solid #3d3a39; border-radius: 8px; overflow: hidden; }
+    .header { padding: 30px; border-bottom: 1px solid #3d3a39; text-align: center; }
+    .logo { color: #00d992; font-weight: bold; letter-spacing: 2px; font-size: 20px; text-transform: uppercase; }
+    .content { padding: 40px 30px; line-height: 1.6; }
+    .greeting { font-size: 18px; color: #ffffff; margin-bottom: 20px; font-weight: 600; }
+    .message { color: #b8b3b0; margin-bottom: 30px; font-size: 15px; }
+    .terminal-box { background-color: #000; padding: 20px; border-radius: 4px; border-left: 3px solid #00d992; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; margin-bottom: 30px; }
+    .terminal-line { color: #00d992; margin-bottom: 5px; font-size: 13px; }
+    .terminal-text { color: #f2f2f2; font-size: 13px; }
+    .btn-container { text-align: center; margin-top: 40px; }
+    .btn { background-color: #101010; border: 1px solid #00d992; color: #2fd6a1 !important; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 14px; letter-spacing: 1px; display: inline-block; transition: all 0.3s; }
+    .footer { padding: 20px; text-align: center; color: #8b949e; font-size: 11px; border-top: 1px solid #3d3a39; text-transform: uppercase; letter-spacing: 1px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">WINGCRAFT HACK-HUB</div>
+    </div>
+    <div class="content">
+      <div class="greeting">Hello, {{to_name}}</div>
+      <div class="message">
+        새로운 해커톤 세션이 준비되었습니다. 기술적 제약을 넘어 아이디어를 프로토타입으로 실현할 시간입니다. 아래 터미널 로그를 확인하고 합류하세요.
+      </div>
+      
+      <div class="terminal-box">
+        <div class="terminal-line">$ wingcraft status --check-session</div>
+        <div class="terminal-text">SESSION_ID: {{round}}</div>
+        <div class="terminal-text">STATUS: DEPLOY_READY</div>
+        <div class="terminal-text">LOCATION: SUWON_MANGPO_STATION</div>
+        <div class="terminal-text">SQUAD_MODE: ACTIVE</div>
+      </div>
+
+      <div class="btn-container">
+        <a href="{{link}}" class="btn">ACCEPT_INVITATION</a>
+      </div>
+    </div>
+    <div class="footer">
+      &copy; 2026 WINGCRAFT. EXECUTED BY 2-MAN SQUAD.
+    </div>
+  </div>
+</body>
+</html>

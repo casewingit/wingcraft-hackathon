@@ -8,6 +8,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function() {
+      // https://dashboard.emailjs.com/admin/account 에서 Public Key를 입력하세요.
+      emailjs.init({
+        publicKey: "YOUR_PUBLIC_KEY",
+      });
+    })();
+  </script>
   <style>
     :root {
       --abyss-black: #050507;
@@ -251,9 +260,21 @@
       background: rgba(0, 217, 146, 0.2);
       color: var(--emerald-signal);
       border-radius: 4px;
-      margin-left: 0.5rem;
       border: 1px solid var(--emerald-signal);
     }
+
+    .status-indicator {
+      font-size: 0.65rem;
+      font-family: 'SFMono-Regular', monospace;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .accepted-badge { background: rgba(0, 217, 146, 0.15); color: var(--emerald-signal); border: 1px solid var(--emerald-signal); }
+    .sent-badge { background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid #3b82f6; }
+    .pending-badge { background: rgba(139, 148, 158, 0.15); color: var(--steel-slate); border: 1px solid var(--warm-charcoal); }
 
     .widget {
       background: var(--carbon-surface);
@@ -563,104 +584,101 @@
         </div>
       `;
       
-      // Check for accepted invitations in localStorage
-      const acceptedInvites = JSON.parse(localStorage.getItem('accepted_invites') || '[]');
-
       // Members Widget
+      const activeEvent = data.events.find(e => e.status === 'LIVE' || e.status === 'ACTIVE') || data.events[data.events.length - 1];
       const membersHtml = data.members.map(m => {
-        const isAccepted = acceptedInvites.includes(m.email);
+        const inviteStatus = activeEvent.invitations ? activeEvent.invitations[m.email] : 'PENDING';
+        const statusClass = inviteStatus === 'ACCEPTED' ? 'accepted-badge' : (inviteStatus === 'SENT' ? 'sent-badge' : 'pending-badge');
+        
         return `
-          <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
-            <span class="member-badge">
-              <span style="color: var(--emerald-signal)">@</span>${m.name} <span style="color: var(--steel-slate); font-size: 10px;">[${m.role}]</span>
-            </span>
-            <span style="color: var(--steel-slate); font-size: 11px; font-family: 'SFMono-Regular', monospace; opacity: 0.8;">
-              ${m.email}
-            </span>
-            ${isAccepted ? '<span class="accepted-badge">ACCEPTED</span>' : ''}
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+            <div style="display: flex; flex-direction: column; gap: 2px;">
+              <span style="font-size: 0.9rem; font-weight: 500;">
+                <span style="color: var(--emerald-signal)">@</span>${m.name}
+              </span>
+              <span style="color: var(--steel-slate); font-size: 11px; font-family: 'SFMono-Regular', monospace;">
+                ${m.role} • ${m.email}
+              </span>
+            </div>
+            <span class="status-indicator ${statusClass}">${inviteStatus}</span>
           </div>
         `;
       }).join('');
+      
+      const needsInvites = data.members.some(m => !activeEvent.invitations || activeEvent.invitations[m.email] === 'PENDING');
       
       const membersWidget = `
         <div class="widget">
           <div class="widget-header">
             <div class="widget-label">SQUAD MEMBERS</div>
+            <div style="font-size: 10px; color: var(--steel-slate); font-family: monospace;">${activeEvent.round} STATUS</div>
           </div>
-          <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+          <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem;">
             ${membersHtml}
           </div>
+          ${needsInvites ? `
+            <button id="sendSquadInvitesBtn" onclick="sendSquadInvites()" class="invite-button">
+              SEND SQUAD INVITES (EMAILJS)
+            </button>
+          ` : `
+            <div style="text-align: center; color: var(--steel-slate); font-size: 0.75rem; font-family: 'SFMono-Regular', monospace; padding: 0.5rem; border: 1px dashed var(--warm-charcoal); border-radius: 4px;">
+              ALL INVITES PROCESSED 🟢
+            </div>
+          `}
         </div>
       `;
 
-      // Invitation Widget (Global with Episode Selector)
-      const eventOptions = data.events.map(e => `<option value="${e.id}">${e.round}</option>`).join('');
-      const inviteWidget = `
-        <div class="widget">
-          <div class="widget-header">
-            <div class="widget-label">INVITE COLLABORATOR</div>
-          </div>
-          <p style="color: var(--steel-slate); font-size: 0.75rem; margin-bottom: 1rem;">
-            Select an episode and enter an email to send an invitation.
-          </p>
-          <div class="invite-form">
-            <select id="inviteEventId" class="invite-select" onchange="updateInviteButtonState()">
-              ${eventOptions}
-            </select>
-            <input type="email" id="inviteEmail" class="invite-input" placeholder="engineer@wingcraft.io">
-            <button id="sendInviteBtn" onclick="sendInvite()" class="invite-button">SEND INVITE</button>
-          </div>
-        </div>
-      `;
-      
-      widgetsGrid.innerHTML = projectWidget + membersWidget + inviteWidget;
+      widgetsGrid.innerHTML = projectWidget + membersWidget;
 
       // Initialize Picker Logic
       initPicker();
       checkInvitation();
-      updateInviteButtonState();
     }
 
-    function updateInviteButtonState() {
-      const eventId = parseInt(document.getElementById('inviteEventId').value);
-      const sentInvites = JSON.parse(localStorage.getItem('sent_invites') || '[]');
-      const btn = document.getElementById('sendInviteBtn');
-      
-      if (sentInvites.includes(eventId)) {
-        btn.disabled = true;
-        btn.textContent = 'INVITATION ALREADY SENT';
-      } else {
+    async function sendSquadInvites() {
+      const btn = document.getElementById('sendSquadInvitesBtn');
+      const originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'PREPARING API...';
+
+      const activeEvent = projectData.events.find(e => e.status === 'LIVE' || e.status === 'ACTIVE') || projectData.events[projectData.events.length - 1];
+      const pendingMembers = projectData.members.filter(m => !activeEvent.invitations || activeEvent.invitations[m.email] === 'PENDING');
+
+      if (pendingMembers.length === 0) {
+        alert('All squad members have already been invited.');
+        btn.textContent = originalText;
         btn.disabled = false;
-        btn.textContent = 'SEND INVITE';
-      }
-    }
-
-    function sendInvite() {
-      const email = document.getElementById('inviteEmail').value;
-      const eventId = parseInt(document.getElementById('inviteEventId').value);
-      
-      if (!email || !email.includes('@')) {
-        alert('Please enter a valid email address.');
         return;
       }
 
-      // Check duplicate
-      let sentInvites = JSON.parse(localStorage.getItem('sent_invites') || '[]');
-      if (sentInvites.includes(eventId)) {
-        alert('Invitation for this episode has already been sent.');
-        return;
-      }
+      try {
+        for (const member of pendingMembers) {
+          btn.textContent = `SENDING TO ${member.name}...`;
+          
+          // EmailJS 호출
+          // 실제 사용 시 Service ID, Template ID를 입력하세요.
+          await emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+            to_name: member.name,
+            to_email: member.email,
+            round: activeEvent.round,
+            message: `You are invited to join the ${activeEvent.round} session.`,
+            link: `${window.location.origin}${window.location.pathname}?invite=accepted&eventId=${activeEvent.id}&email=${member.email}`
+          });
+          
+          console.log(`Invite successfully sent to ${member.name} (${member.email})`);
+        }
 
-      const eventData = projectData.events.find(e => e.id === eventId);
-      const subject = encodeURIComponent(`[INVITATION] Wingcraft Hackathon - ${eventData.round}`);
-      const body = encodeURIComponent(`You are invited to ${eventData.round} of Wingcraft Hackathon.\n\nAccept Invitation: ${window.location.origin}${window.location.pathname}?invite=accepted&eventId=${eventId}&email=${email}\n\nSee you in the terminal.`);
-      
-      // Record sent status
-      sentInvites.push(eventId);
-      localStorage.setItem('sent_invites', JSON.stringify(sentInvites));
-      
-      window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-      updateInviteButtonState();
+        alert('Squad invites have been successfully triggered via EmailJS API.');
+        btn.textContent = 'INVITES SENT ✅';
+        
+        // 상태 업데이트 안내 (실제 서버가 없으므로 알림으로 대체)
+        console.log('NOTE: Please update data.json manually to reflect the "SENT" status.');
+      } catch (error) {
+        console.error('EmailJS Error:', error);
+        alert('Failed to send invites. Please check your EmailJS configuration and Public Key.');
+        btn.textContent = 'RETRY SEND';
+        btn.disabled = false;
+      }
     }
 
     function checkInvitation() {
