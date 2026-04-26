@@ -198,12 +198,12 @@
     /* Invite Widget Styles */
     .invite-form {
       display: flex;
+      flex-direction: column;
       gap: 1rem;
       margin-top: 1rem;
     }
 
-    .invite-input {
-      flex: 1;
+    .invite-input, .invite-select {
       background: #000;
       border: 1px solid var(--warm-charcoal);
       border-radius: 4px;
@@ -213,9 +213,10 @@
       font-size: 0.875rem;
       outline: none;
       transition: border-color 0.3s;
+      width: 100%;
     }
 
-    .invite-input:focus {
+    .invite-input:focus, .invite-select:focus {
       border-color: var(--emerald-signal);
     }
 
@@ -223,18 +224,25 @@
       background: var(--carbon-surface);
       border: 1px solid var(--warm-charcoal);
       border-radius: 4px;
-      padding: 0 1.5rem;
+      padding: 0.75rem 1.5rem;
       color: var(--volt-mint);
       font-family: 'SFMono-Regular', monospace;
       font-size: 0.75rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s;
+      width: 100%;
     }
 
-    .invite-button:hover {
+    .invite-button:hover:not(:disabled) {
       background: rgba(0, 217, 146, 0.1);
       border-color: var(--emerald-signal);
+    }
+
+    .invite-button:disabled {
+      color: var(--steel-slate);
+      cursor: not-allowed;
+      opacity: 0.5;
     }
 
     .accepted-badge {
@@ -585,18 +593,22 @@
         </div>
       `;
 
-      // Invitation Widget (Global)
+      // Invitation Widget (Global with Episode Selector)
+      const eventOptions = data.events.map(e => `<option value="${e.id}">${e.round}</option>`).join('');
       const inviteWidget = `
         <div class="widget">
           <div class="widget-header">
             <div class="widget-label">INVITE COLLABORATOR</div>
           </div>
           <p style="color: var(--steel-slate); font-size: 0.75rem; margin-bottom: 1rem;">
-            Enter an email to send a hackathon invitation link.
+            Select an episode and enter an email to send an invitation.
           </p>
           <div class="invite-form">
+            <select id="inviteEventId" class="invite-select" onchange="updateInviteButtonState()">
+              ${eventOptions}
+            </select>
             <input type="email" id="inviteEmail" class="invite-input" placeholder="engineer@wingcraft.io">
-            <button onclick="sendInvite()" class="invite-button">SEND INVITE</button>
+            <button id="sendInviteBtn" onclick="sendInvite()" class="invite-button">SEND INVITE</button>
           </div>
         </div>
       `;
@@ -606,19 +618,49 @@
       // Initialize Picker Logic
       initPicker();
       checkInvitation();
+      updateInviteButtonState();
+    }
+
+    function updateInviteButtonState() {
+      const eventId = parseInt(document.getElementById('inviteEventId').value);
+      const sentInvites = JSON.parse(localStorage.getItem('sent_invites') || '[]');
+      const btn = document.getElementById('sendInviteBtn');
+      
+      if (sentInvites.includes(eventId)) {
+        btn.disabled = true;
+        btn.textContent = 'INVITATION ALREADY SENT';
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'SEND INVITE';
+      }
     }
 
     function sendInvite() {
       const email = document.getElementById('inviteEmail').value;
+      const eventId = parseInt(document.getElementById('inviteEventId').value);
+      
       if (!email || !email.includes('@')) {
         alert('Please enter a valid email address.');
         return;
       }
 
-      const subject = encodeURIComponent('Invitation: WINGCRAFT HACK-HUB 2026');
-      const body = encodeURIComponent(`You are invited to join WINGCRAFT HACK-HUB 2026.\n\nAccept Invitation: ${window.location.origin}${window.location.pathname}?invite=accepted&email=${email}\n\nSee you in the terminal.`);
+      // Check duplicate
+      let sentInvites = JSON.parse(localStorage.getItem('sent_invites') || '[]');
+      if (sentInvites.includes(eventId)) {
+        alert('Invitation for this episode has already been sent.');
+        return;
+      }
+
+      const eventData = projectData.events.find(e => e.id === eventId);
+      const subject = encodeURIComponent(`[INVITATION] Wingcraft Hackathon - ${eventData.round}`);
+      const body = encodeURIComponent(`You are invited to ${eventData.round} of Wingcraft Hackathon.\n\nAccept Invitation: ${window.location.origin}${window.location.pathname}?invite=accepted&eventId=${eventId}&email=${email}\n\nSee you in the terminal.`);
+      
+      // Record sent status
+      sentInvites.push(eventId);
+      localStorage.setItem('sent_invites', JSON.stringify(sentInvites));
       
       window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+      updateInviteButtonState();
     }
 
     function checkInvitation() {
@@ -698,7 +740,7 @@
         }, 2500);
       }
 
-      typeTerminal(content, lines, isAcceptance ? null : eventId).then(() => {
+      typeTerminal(content, lines).then(() => {
         if (isAcceptance) {
           renderCalendarActions(content, eventData);
         }
@@ -710,7 +752,7 @@
       document.body.style.overflow = 'auto';
     }
 
-    async function typeTerminal(container, lines, eventId = null) {
+    async function typeTerminal(container, lines) {
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         const lineElement = document.createElement('div');
@@ -740,10 +782,6 @@
           }
           
           if (i === lines.length - 1) {
-            if (eventId) {
-              renderTerminalInvite(container, eventId);
-            }
-            
             if (!line.text.includes('Opening')) {
               const finalPrompt = document.createElement('div');
               finalPrompt.innerHTML = '<span class="terminal-prompt">user@wingcraft:~/hackathon$</span><span class="terminal-cursor"></span>';
@@ -752,57 +790,6 @@
           }
         }
         container.scrollTop = container.scrollHeight;
-      }
-    }
-
-    function renderTerminalInvite(container, eventId) {
-      const sentInvites = JSON.parse(localStorage.getItem('sent_invites') || '[]');
-      const isSent = sentInvites.includes(eventId);
-      
-      const inviteBox = document.createElement('div');
-      inviteBox.className = 'terminal-invite-box';
-      
-      if (isSent) {
-        inviteBox.innerHTML = `
-          <div class="terminal-invite-header">[SYSTEM] INVITATION ALREADY EXECUTED FOR EP.${eventId}</div>
-          <div style="color: var(--steel-slate); font-size: 13px;">Mail transmission locked to prevent spam.</div>
-        `;
-      } else {
-        inviteBox.innerHTML = `
-          <div class="terminal-invite-header">[ACTION] INVITE ENGINEER TO THIS EPISODE</div>
-          <div class="terminal-input-group">
-            <input type="email" id="termInviteEmail" class="terminal-input" placeholder="engineer@wingcraft.io">
-            <button onclick="sendEpisodeInvite(${eventId})" class="terminal-btn">SEND_INVITE</button>
-          </div>
-        `;
-      }
-      container.appendChild(inviteBox);
-    }
-
-    function sendEpisodeInvite(eventId) {
-      const email = document.getElementById('termInviteEmail').value;
-      if (!email || !email.includes('@')) {
-        alert('Invalid email address.');
-        return;
-      }
-
-      // Record sent status
-      let sentInvites = JSON.parse(localStorage.getItem('sent_invites') || '[]');
-      if (!sentInvites.includes(eventId)) {
-        sentInvites.push(eventId);
-        localStorage.setItem('sent_invites', JSON.stringify(sentInvites));
-      }
-
-      const eventData = projectData.events.find(e => e.id === eventId);
-      const subject = encodeURIComponent(`[INVITATION] Wingcraft Hackathon - ${eventData.round}`);
-      const body = encodeURIComponent(`You are invited to ${eventData.round} of Wingcraft Hackathon.\n\nDate: ${eventData.date}\n\nAccept Invitation & Add to Calendar: ${window.location.origin}${window.location.pathname}?invite=accepted&eventId=${eventId}&email=${email}\n\nTerminating...`);
-      
-      window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-      
-      // Update UI immediately
-      const box = document.querySelector('.terminal-invite-box');
-      if (box) {
-        box.innerHTML = `<div class="terminal-invite-header">[SYSTEM] INVITATION RECORDED AND TRANSMITTED.</div>`;
       }
     }
 
