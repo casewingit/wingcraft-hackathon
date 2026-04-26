@@ -13,7 +13,7 @@
     (function() {
       // https://dashboard.emailjs.com/admin/account 에서 Public Key를 입력하세요.
       emailjs.init({
-        publicKey: "YOUR_PUBLIC_KEY",
+        publicKey: "1BQbNsaRrNi2NXsuP",
       });
     })();
   </script>
@@ -657,7 +657,7 @@
           
           // EmailJS 호출
           // 실제 사용 시 Service ID, Template ID를 입력하세요.
-          await emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+          await emailjs.send("service_hqryhzu", "template_32j9cfp", {
             to_name: member.name,
             to_email: member.email,
             round: activeEvent.round,
