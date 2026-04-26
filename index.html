@@ -657,13 +657,15 @@
           
           // EmailJS 호출
           // 실제 사용 시 Service ID, Template ID를 입력하세요.
-          await emailjs.send("service_hqryhzu", "template_32j9cfp", {
+          await emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
             to_name: member.name,
             to_email: member.email,
+            role: member.role,
             round: activeEvent.round,
             message: `You are invited to join the ${activeEvent.round} session.`,
             link: `${window.location.origin}${window.location.pathname}?invite=accepted&eventId=${activeEvent.id}&email=${member.email}`
           });
+
           
           console.log(`Invite successfully sent to ${member.name} (${member.email})`);
         }
